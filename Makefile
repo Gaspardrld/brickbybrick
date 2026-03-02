@@ -1,25 +1,49 @@
-# Compilateur et options de compilation
-CXX = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -O2
+CXX      := g++
+CXXFLAGS := -std=c++17 -Wall -Wextra -Wpedantic -O2
+CPPFLAGS := -MMD -MP
+LDFLAGS  :=
+LDLIBS   :=
 
-TARGET = project
+TARGET := project
 
-SRCS = project.cc game.cc message.cc brick.cc ball.cc paddle.cc tools.cc
+# Adapte ces dossiers à TON arborescence réelle.
+# Rendu 1 : pas de gui/graphic/gtkmm.
+SRC_DIRS := . tools message game brick ball paddle project
 
-# Fichiers objets correspondants
-OBJS = $(SRCS:.cc=.o)
+# Récupère tous les .cc/.cpp des dossiers listés (ceux qui existent)
+SRCS := $(foreach d,$(SRC_DIRS),$(wildcard $(d)/*.cc) $(wildcard $(d)/*.cpp)) \
+        $(wildcard *.cc) $(wildcard *.cpp)
 
-# Règle par défaut
+# Si tu veux forcer l'exclusion de modules GTK/mmême s’ils traînent :
+SRCS := $(filter-out %/gui.cc %/gui.cpp %/graphic.cc %/graphic.cpp,$(SRCS))
+
+OBJS := $(SRCS:.cc=.o)
+OBJS := $(OBJS:.cpp=.o)
+
+DEPS := $(OBJS:.o=.d)
+
+.PHONY: all clean distclean run
+
 all: $(TARGET)
 
-# Édition de liens pour la création de l'exécutable final
 $(TARGET): $(OBJS)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $(OBJS)
+	$(CXX) $(LDFLAGS) $^ $(LDLIBS) -o $@
 
-# Compilation séparée pour chaque fichier source
+# Règles de compilation (pour .cc et .cpp)
 %.o: %.cc
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
 
-# Suppression des fichiers objets et de l'exécutable
+%.o: %.cpp
+	$(CXX) $(CPPFLAGS) $(CXXFLAGS) -c $< -o $@
+
+-include $(DEPS)
+
 clean:
-	rm -f $(OBJS) $(TARGET)
+	rm -f $(OBJS) $(DEPS)
+
+distclean: clean
+	rm -f $(TARGET)
+
+# Usage: make run TEST=t01.txt
+run: $(TARGET)
+	./$(TARGET) $(TEST)
