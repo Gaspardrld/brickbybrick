@@ -1,6 +1,6 @@
-# output: "Score (-1) must be >= 0"
+# output: "Ball 0 superposed with brick 0"
 # score
--1
+0
 
 # lives
 3
@@ -10,7 +10,7 @@
 
 # bricks
 5
-0 65 55 5 1
+0 53.4 51 5 1
 0 85 45 5 1
 0 75 25 5 1
 0 40 95 5 1
