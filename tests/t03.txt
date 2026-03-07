@@ -1,12 +1,12 @@
-# output: "Score (-1) must be >= 0"
+# output: "Paddle at (50.000000;-20.000000) is is_outside its allowed arena"
 # score
--1
+0
 
 # lives
 3
 
 # paddle
-50 -16 20
+50 -20 20
 
 # bricks
 5

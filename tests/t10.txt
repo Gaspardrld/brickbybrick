@@ -1,6 +1,6 @@
-# output: "Score (-1) must be >= 0"
+# output: "Paddle superposed with ball 1"
 # score
--1
+0
 
 # lives
 3
@@ -17,5 +17,6 @@
 0 30 95 5 1
 
 # balls
-1
+2
 50 50 1 0.5 0.5
+55 3 1 0.5 0.5

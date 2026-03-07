@@ -1,6 +1,6 @@
-# output: "Score (-1) must be >= 0"
+# output: "Correct file"
 # score
--1
+0
 
 # lives
 3
