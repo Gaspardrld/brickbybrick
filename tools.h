@@ -1,9 +1,43 @@
+#include <cmath>
+
+
 constexpr double epsil_zero = 0.125;
 
-class Square {
 
+struct Point {
+    double x = 0.0;
+    double y = 0.0;
 };
 
-class Circle {
-
+struct Circle {
+    Point  center;
+    double radius = 0.0;
 };
+
+struct Square {
+    Point  center;
+    double side   = 0.0;
+};
+
+
+double Norme(Point v);
+
+double Norme_Au_Carre(Point v);
+
+double Produit_Scalaire(Point a, Point b);
+
+double Distance(Point a, Point b);
+
+bool circles_intersect(const Circle& c1, const Circle& c2, bool use_tolerance = true);
+
+bool circle_square_intersect(const Circle& c, const Square& s,bool use_tolerance = true);
+
+bool squares_intersect(const Square& s1, const Square& s2, bool use_tolerance = true);
+
+bool point_in_square(Point p, const Square& s,bool use_tolerance = true);
+
+bool circle_in_square(const Circle& c, const Square& arena,bool use_tolerance = true, bool ignore_bottom = false);
+
+bool square_in_square(const Square& inner, const Square& outer,bool use_tolerance = true);
+
+Point closest_point_on_square(Point p, const Square& s);
