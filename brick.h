@@ -4,22 +4,33 @@
 using namespace std;
 
 class Brick {
-    private :
-        Square form;
-    public :
+protected :
+    Square form;
+public :
+    Square get_form() const;
+    bool valid_Brick() const;
+    Brick(double x, double y, double side) : form({{x,y}, side}) {}
 };
 
 
-class rainbow_Brick : public Brick {
-
+class Rainbow_Brick : public Brick {
+private :
+    int hit_points;
+public :
+    Rainbow_Brick(double x, double y, double side, int hp)
+    : Brick(x,y,side), hit_points(hp) {}
+    int get_hit_points() const;
 };
 
 
-class ball_Brick : public Brick {
-
+class Ball_Brick : public Brick {
+public :
+    Ball_Brick(double x, double y, double side)
+    : Brick(x,y,side) {}
 };
 
-
-class split_brick : public Brick {
-
+class Split_Brick : public Brick {
+public :
+    Split_Brick(double x, double y, double side)
+    : Brick(x,y,side) {}
 };
