@@ -4,7 +4,7 @@
 
 
 double Norme(Point v) {
-    return sqrt(v.x * v.x + v.y * v.y);
+    return std::sqrt(v.x * v.x + v.y * v.y);
 }
 
 double Norme_Au_Carre(Point v) {
