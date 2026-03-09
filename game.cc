@@ -54,31 +54,60 @@ namespace {
             case EXPECT_PADDLE:
                 current_state = EXPECT_NB_BRICKS;
                 double x, y, radius;
-                Paddle(double x, double y, double radius)
                 iss >> x >> y >> radius;
-                if (x < 0 || x > arena_size || y > 0 || y+radius <= 0 || radius <= 0 || !is_circle_arc_in_bounds(x, y, radius, arena_size)) {
-                    cout << paddle_outside(x, y);
-                    return false;
-                }
+                Paddle p(double x, double y, double radius);
+                return p.validate_paddle();
                 break;
 
             case EXPECT_NB_BRICKS:
                 current_state = EXPECT_BRICKS;
                 int nb_bricks;
                 iss >> nb_bricks;
-                if (nb_bricks < 0) {
+                if (nb_bricks <= 0) {
                     return false;
                 }
                 break;
 
             case EXPECT_BRICKS:
-                current_state = EXPECT_BRICKS; 
+                current_state = EXPECT_NB_BALLS; 
+                for (int i = 0; i < nb_bricks; ++i) {
+                    string type;
+                    double x, y, side;
+                    iss >> type >> x >> y >> side;
+                    if (type == "Rainbow") {
+                        int hit_points;
+                        iss >> hit_points;
+                        Rainbow_Brick rbrick(x, y, side, hit_points);
+                        return rbrick.valid_Brick();
+                    } else if (type == "Ball") {
+                        Ball_Brick bbrick(x, y, side);
+                        return bbrick.valid_Brick();
+                    } else if (type == "Split") {
+                        Split_Brick sbrick(x, y, side);
+                        return sbrick.valid_Brick();
+                    } else {
+                        cout << invalid_brick_type(type);
+                        return false;
+                    } 
+                }
                 break;
 
             case EXPECT_NB_BALLS:
                 current_state = EXPECT_BALLS;
+                int nb_balls;
+                iss >> nb_balls;
+                if (nb_bricks <= 0) {
+                    return false;
+                }
                 break;
+
             case EXPECT_BALLS:
+                for (int i = 0; i < nb_balls; ++i) {
+                    double x, y, radius, delta_x, delta_y;
+                    iss >> x >> y >> radius >> delta_x >> delta_y;
+                    Ball ball(x, y, radius, delta_x, delta_y);
+                    return ball.validate_ball();
+                }
                 break;
         }
         return true;
