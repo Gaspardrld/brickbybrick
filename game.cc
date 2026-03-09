@@ -42,10 +42,11 @@ namespace {
 
             case EXPECT_SCORE: {
                 current_state = EXPECT_LIVES;
-                iss >> total_score;
-
+                if (!(iss >> total_score)) {
+                    return false;
+                }
                 if (total_score < 0) {
-                    cout << invalid_score(total_score);
+                    cout << message::invalid_score(total_score);
                     return false;
                 }
                 break;
@@ -53,10 +54,11 @@ namespace {
             
             case EXPECT_LIVES: {
                 current_state = EXPECT_PADDLE;
-                iss >> nb_lives;
-
+                if (!(iss >> nb_lives)) {
+                    return false;
+                }
                 if (nb_lives < 0) {
-                    cout << invalid_lives(nb_lives);
+                    cout << message::invalid_lives(nb_lives);
                     return false;
                 }
                 break;
@@ -65,7 +67,9 @@ namespace {
             case EXPECT_PADDLE: {
                 current_state = EXPECT_NB_BRICKS;
                 double x, y, radius;
-                iss >> x >> y >> radius;
+                if (!(iss >> x >> y >> radius)) {
+                    return false;
+                }
                 paddle = Paddle(x, y, radius);
                 
                 if (!paddle.validate_paddle()) return false;
@@ -73,7 +77,9 @@ namespace {
             }
 
             case EXPECT_NB_BRICKS: {
-                iss >> nb_bricks;
+                if (!(iss >> nb_bricks)) {
+                    return false;
+                }
                 if (nb_bricks < 0) {
                     return false;
                 }
@@ -91,20 +97,22 @@ namespace {
             case EXPECT_BRICKS: {
                 int type;
                 double x, y, side;
-                iss >> type >> x >> y >> side;
-
+                if (!(iss >> type >> x >> y >> side)) {
+                    return false;
+                }
                 Brick* new_brick = nullptr;
-
                 if (type == 0) {
                     int hit_points;
-                    iss >> hit_points;
+                    if (!(iss >> hit_points)) {
+                    return false;
+                }
                     new_brick = new Rainbow_Brick(x, y, side, hit_points);
                 } else if (type == 1) {
                     new_brick = new Ball_Brick(x, y, side);
                 } else if (type == 2) {
                     new_brick = new Split_Brick(x, y, side);
                 } else {
-                    cout << invalid_brick_type(type);
+                    cout << message::invalid_brick_type(type);
                     return false;
                 } 
 
@@ -123,7 +131,9 @@ namespace {
             }
 
             case EXPECT_NB_BALLS: {
-                iss >> nb_balls;
+                if (!(iss >> nb_balls)) {
+                    return false;
+                }
                 if (nb_balls < 0) {
                     return false;
                 }
@@ -140,13 +150,13 @@ namespace {
 
             case EXPECT_BALLS: {
                 double x, y, radius, delta_x, delta_y;
-                iss >> x >> y >> radius >> delta_x >> delta_y;
-                Ball ball(x, y, radius, delta_x, delta_y);
-                
-                if (!ball.validate_ball()) {
+                if (!(iss >> x >> y >> radius >> delta_x >> delta_y)) {
                     return false;
                 }
-                
+                Ball ball(x, y, radius, delta_x, delta_y);
+                if (!ball.valid_Ball()) {
+                    return false;
+                }
                 balls.push_back(ball);
                 nb_balls_read++;
                 
@@ -159,6 +169,7 @@ namespace {
         return true;
     }
 }
+
 
 namespace game {
 
@@ -201,6 +212,10 @@ namespace game {
         }
 
         file.close();
+        if (current_state != EXPECT_SCORE) {
+            reset();
+            return false;
+        }       
         return true;
     }
 }
