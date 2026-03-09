@@ -80,7 +80,6 @@ namespace {
                 
                 nb_bricks_read = 0;
                 
-                // L'aiguillage propre : on saute l'étape si 0 brique
                 if (nb_bricks > 0) {
                     current_state = EXPECT_BRICKS;
                 } else {
@@ -109,7 +108,6 @@ namespace {
                     return false;
                 } 
 
-                // On centralise la validation et on évite la fuite de mémoire
                 if (!new_brick->valid_Brick()){
                     delete new_brick;
                     return false;
@@ -132,7 +130,6 @@ namespace {
                 
                 nb_balls_read = 0;
                 
-                // Même logique d'aiguillage pour les balles
                 if (nb_balls > 0) {
                     current_state = EXPECT_BALLS;
                 } else {
