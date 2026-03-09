@@ -24,62 +24,140 @@ namespace {
 
     State current_state;
     double total_score;
-    unsigned nb_lives;
+    int nb_lives;
+    int nb_bricks;
+    int nb_balls;
+    int nb_bricks_read = 0;
+    int nb_balls_read = 0;
+
+    Paddle paddle;        
+    vector<Ball> balls;     
+    vector<Brick*> bricks;  
 
     bool decode_line(const string& line) {
+
         istringstream iss(line);
         
         switch (current_state) {
 
-            case EXPECT_SCORE:
+            case EXPECT_SCORE: {
                 current_state = EXPECT_LIVES;
-                int score;
-                iss >> score;
-                if (score < 0) {
-                    cout << invalid_score(score);
+                iss >> total_score;
+
+                if (total_score < 0) {
+                    cout << invalid_score(total_score);
                     return false;
                 }
                 break;
-
-            case EXPECT_LIVES:
+            }
+            
+            case EXPECT_LIVES: {
                 current_state = EXPECT_PADDLE;
-                int lives;
-                iss >> lives;
-                if (lives < 0) {
-                    cout << invalid_lives(lives);
+                iss >> nb_lives;
+
+                if (nb_lives < 0) {
+                    cout << invalid_lives(nb_lives);
                     return false;
                 }
                 break;
+            }
 
-            case EXPECT_PADDLE:
+            case EXPECT_PADDLE: {
                 current_state = EXPECT_NB_BRICKS;
                 double x, y, radius;
-                Paddle(double x, double y, double radius)
                 iss >> x >> y >> radius;
-                if (x < 0 || x > arena_size || y > 0 || y+radius <= 0 || radius <= 0 || !is_circle_arc_in_bounds(x, y, radius, arena_size)) {
-                    cout << paddle_outside(x, y);
-                    return false;
-                }
+                paddle = Paddle(x, y, radius);
+                
+                if (!paddle.validate_paddle()) return false;
                 break;
+            }
 
-            case EXPECT_NB_BRICKS:
-                current_state = EXPECT_BRICKS;
-                int nb_bricks;
+            case EXPECT_NB_BRICKS: {
                 iss >> nb_bricks;
                 if (nb_bricks < 0) {
                     return false;
                 }
+                
+                nb_bricks_read = 0;
+                
+                // L'aiguillage propre : on saute l'étape si 0 brique
+                if (nb_bricks > 0) {
+                    current_state = EXPECT_BRICKS;
+                } else {
+                    current_state = EXPECT_NB_BALLS;
+                }
                 break;
+            }
 
-            case EXPECT_BRICKS:
-                current_state = EXPECT_BRICKS; 
-                break;
+            case EXPECT_BRICKS: {
+                int type;
+                double x, y, side;
+                iss >> type >> x >> y >> side;
 
-            case EXPECT_NB_BALLS:
-                current_state = EXPECT_BALLS;
+                Brick* new_brick = nullptr;
+
+                if (type == 0) {
+                    int hit_points;
+                    iss >> hit_points;
+                    new_brick = new Rainbow_Brick(x, y, side, hit_points);
+                } else if (type == 1) {
+                    new_brick = new Ball_Brick(x, y, side);
+                } else if (type == 2) {
+                    new_brick = new Split_Brick(x, y, side);
+                } else {
+                    cout << invalid_brick_type(type);
+                    return false;
+                } 
+
+                // On centralise la validation et on évite la fuite de mémoire
+                if (!new_brick->valid_Brick()){
+                    delete new_brick;
+                    return false;
+                }
+                
+                bricks.push_back(new_brick);
+                nb_bricks_read++;
+
+                if (nb_bricks_read == nb_bricks) {
+                    current_state = EXPECT_NB_BALLS;
+                }
                 break;
-            case EXPECT_BALLS:
+            }
+
+            case EXPECT_NB_BALLS: {
+                iss >> nb_balls;
+                if (nb_balls < 0) {
+                    return false;
+                }
+                
+                nb_balls_read = 0;
+                
+                // Même logique d'aiguillage pour les balles
+                if (nb_balls > 0) {
+                    current_state = EXPECT_BALLS;
+                } else {
+                    current_state = EXPECT_SCORE;
+                }
                 break;
+            }
+
+            case EXPECT_BALLS: {
+                double x, y, radius, delta_x, delta_y;
+                iss >> x >> y >> radius >> delta_x >> delta_y;
+                Ball ball(x, y, radius, delta_x, delta_y);
+                
+                if (!ball.validate_ball()) {
+                    return false;
+                }
+                
+                balls.push_back(ball);
+                nb_balls_read++;
+                
+                if (nb_balls_read == nb_balls) {
+                    current_state = EXPECT_SCORE;
+                }
+                break;
+            }
         }
         return true;
     }
@@ -91,6 +169,15 @@ namespace game {
         total_score = 0;
         nb_lives = 0;
         current_state = EXPECT_SCORE;
+        nb_bricks_read = 0;
+        nb_balls_read = 0;
+
+        for (auto brick : bricks) {
+            delete brick;
+        }
+
+        bricks.clear();
+        balls.clear();   
     }
 
     bool read(char* file_name) {
