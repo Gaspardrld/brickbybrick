@@ -177,7 +177,7 @@ namespace game {
         balls.clear();   
     }
 
-    bool read(char* file_name) {
+    bool read(const char* file_name) {
         reset(); 
 
         ifstream file(file_name);
@@ -195,6 +195,7 @@ namespace game {
             }
 
             if (!decode_line(line)) {
+                reset();
                 return false;
             }
         }
