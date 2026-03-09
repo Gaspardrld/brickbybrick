@@ -1,107 +1,51 @@
-// message.cc  : 13 fonctions pour l'affichage des messages d'erreur
-//              et une fonction supplémentaire pour indiquer le succès de la lecture
+#ifndef MESSAGE_H
+#define MESSAGE_H
 //
+// message.h  : 13 fonctions pour l'affichage des messages d'erreur
+//              et une fonction supplémentaire pour indiquer le succès de la lecture
 //
 // Version 1.0 du 24.02.2025
 //
 
-#include "message.h"
+#include <string>
 
-using namespace std;
+namespace message
+{
+// score must be >= 0
+std::string invalid_score(int score);
+// lives must be >= 0
+std::string invalid_lives(int score);
 
-// l'espace de nom non-nommé sert ici à restreindre l'usage de la fonction
-// reorder_for_consistency à ce module ; c'est une fonction utilitaire locale
-namespace // non-nommé
-{
-void reorder_for_consistency(size_t &index1, size_t &index2)
-{
-    if (index1 > index2)
-    {
-        swap(index1, index2);
-    }
-}
-} // namespace
+// contained in the arena
+std::string brick_outside(double x, double y);
+// contained in the arena (ignore radius for the lower bound)
+std::string ball_outside(double x, double y);
+// the arc (part of the circle above y=0) must be contained in the arena
+std::string paddle_outside(double x, double y);
 
-std::string message::invalid_score(int score)
-{
-    return "Score (" + to_string(score) + ") must be >= 0\n";
-}
-std::string message::invalid_lives(int lives)
-{
-    return "Lives (" + to_string(lives) + ") must be >= 0\n";
-}
+// brick_size >= brick_size_min
+std::string invalid_brick_size(double size);
+// brick_type is in {0, 1, 2}
+std::string invalid_brick_type(int type);
+// hit_points is in {1, 2, 3, 4, 5, 6, 7}
+std::string invalid_hit_points(int hit_points);
+// delta_norm must be <= delta_norm_max
+std::string invalid_delta(double x, double y);
 
-std::string message::brick_outside(double x, double y)
-{
-    return "Brick at (" + to_string(x) + ";" + to_string(y) +
-           ") is is_outside the arena\n";
-}
-std::string message::ball_outside(double x, double y)
-{
-    return "Ball at (" + to_string(x) + ";" + to_string(y) +
-           ") is is_outside the arena\n";
-}
-std::string message::paddle_outside(double x, double y)
-{
-    return "Paddle at (" + to_string(x) + ";" + to_string(y) +
-           ") is is_outside its allowed arena\n";
-}
+// no collision of any sort when using a margin of 0 (instead of epsil_zero)
+std::string collision_bricks(size_t brick1_index, size_t brick2_index);
+std::string collision_paddle_brick(size_t brick_index);
+std::string collision_balls(size_t ball1_index, size_t ball2_index);
+std::string collision_ball_brick(size_t ball_index, size_t brick_index);
+std::string collision_paddle_ball(size_t ball_index);
 
-std::string message::invalid_brick_size(double size)
-{
-    return "Brick size (" + to_string(size) + ") must be >= brick_size_min\n";
-}
-std::string message::invalid_brick_type(int type)
-{
-    return "Brick type (" + to_string(type) + ") must be in [0, 2]\n";
-}
-std::string message::invalid_hit_points(int hit_points)
-{
-    return "Color number (" + to_string(hit_points) + ") must be in [1, 7]\n";
-}
-std::string message::invalid_delta(double x, double y)
-{
-    return "Delta norm (" + to_string(x) + ";" + to_string(y) +
-           ") must be <= delta_norm_max\n";
-}
+// Everything went well => file reading and all validation checks
+std::string success();
 
-std::string message::collision_bricks(size_t brick1_index, size_t brick2_index)
-{
-    reorder_for_consistency(brick1_index, brick2_index);
-    return "Brick " + to_string(brick1_index) + " superposed with brick " +
-           to_string(brick2_index) + "\n";
-}
-std::string message::collision_paddle_brick(size_t brick_index)
-{
-    return "Paddle superposed with brick " + to_string(brick_index) + "\n";
-}
-std::string message::collision_balls(size_t ball1_index, size_t ball2_index)
-{
-    reorder_for_consistency(ball1_index, ball2_index);
-    return "Ball " + to_string(ball1_index) + " superposed with ball " +
-           to_string(ball2_index) + "\n";
-}
-std::string message::collision_ball_brick(size_t ball_index, size_t brick_index)
-{
-    return "Ball " + to_string(ball_index) + " superposed with brick " +
-           to_string(brick_index) + "\n";
-}
-std::string message::collision_paddle_ball(size_t ball_index)
-{
-    return "Paddle superposed with ball " + to_string(ball_index) + "\n";
-}
+// The game is won
+std::string won();
+// The game is lost
+std::string lost();
+} // namespace message
 
-std::string message::success()
-{
-    return "Correct file\n";
-}
-
-std::string message::won()
-{
-    return "You won!\n";
-}
-
-std::string message::lost()
-{
-    return "Game over\n";
-}
+#endif
