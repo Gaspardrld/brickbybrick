@@ -32,8 +32,9 @@ namespace {
         switch (current_state) {
 
             case EXPECT_SCORE:
-                int score;
                 current_state = EXPECT_LIVES;
+                int score;
+                iss >> score;
                 if (score < 0) {
                     cout << invalid_score(score);
                     return false;
@@ -43,6 +44,7 @@ namespace {
             case EXPECT_LIVES:
                 current_state = EXPECT_PADDLE;
                 int lives;
+                iss >> lives;
                 if (lives < 0) {
                     cout << invalid_lives(lives);
                     return false;
@@ -52,7 +54,9 @@ namespace {
             case EXPECT_PADDLE:
                 current_state = EXPECT_NB_BRICKS;
                 double x, y, radius;
-                if (x < 0 || x > arena_size || y > 0 || y+radius <= 0) {
+                Paddle(double x, double y, double radius)
+                iss >> x >> y >> radius;
+                if (x < 0 || x > arena_size || y > 0 || y+radius <= 0 || radius <= 0 || !is_circle_arc_in_bounds(x, y, radius, arena_size)) {
                     cout << paddle_outside(x, y);
                     return false;
                 }
@@ -60,9 +64,15 @@ namespace {
 
             case EXPECT_NB_BRICKS:
                 current_state = EXPECT_BRICKS;
+                int nb_bricks;
+                iss >> nb_bricks;
+                if (nb_bricks < 0) {
+                    return false;
+                }
                 break;
 
             case EXPECT_BRICKS:
+                current_state = EXPECT_BRICKS; 
                 break;
 
             case EXPECT_NB_BALLS:
