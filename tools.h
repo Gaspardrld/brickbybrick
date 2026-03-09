@@ -28,7 +28,7 @@ double Produit_Scalaire(Point a, Point b);
 
 double Distance(Point a, Point b);
 
-bool is_circle_arc_in_bounds(double x_center, double y_center, double radius, double x_max);
+bool is_circle_arc_in_bounds(double x_center, double y_center, double radius, double x_max , bool use_tolerance = true);
 
 bool circles_intersect(const Circle& c1, const Circle& c2, bool use_tolerance = true);
 
