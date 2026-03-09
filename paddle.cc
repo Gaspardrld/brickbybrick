@@ -9,3 +9,8 @@ bool Paddle::validate_paddle() const {
         return false;
     }
     if (not
+
+    if (x < 0 || x > arena_size || y > 0 || y+radius <= 0 || radius <= 0 || !is_circle_arc_in_bounds(x, y, radius, arena_size)) {
+                    cout << paddle_outside(x, y);
+                    return false;
+                }    

@@ -37,7 +37,16 @@ bool point_in_square(Point p, const Square& s, bool use_tolerance = true) {
     return in_x and in_y;
 }
 
+bool is_circle_arc_in_bounds(double x_center, double y_center, double radius, double x_max) {
+    double radicand = radius * radius - y_center * y_center;
+    if (radicand < 0) return false;
 
+    double L = sqrt(radicand);
+    double x1 = x_center - L;
+    double x2 = x_center + L;
+
+    return (x1 >= 0 && x1 <= x_max && x2 >= 0 && x2 <= x_max);
+}
 
 bool circles_intersect(const Circle& c1, const Circle& c2, bool use_tolerance = true) {
     double tol = use_tolerance ? epsil_zero : 0.0;
