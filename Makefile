@@ -15,15 +15,15 @@ all: $(SRC:.cc=.o)
 %.o: %.cc
 	$(CXX) $(CXXFLAGS) -c $< -o $@
 
-project.o  : project.cc  game.h
-game.o     : game.cc     game.h brick.h ball.h paddle.h message.h tools.h constants.h
-brick.o    : brick.cc    brick.h tools.h constants.h message.h
-ball.o     : ball.cc     ball.h tools.h constants.h message.h
-paddle.o   : paddle.cc   paddle.h tools.h constants.h message.h
-message.o  : message.cc  message.h
-tools.o    : tools.cc    tools.h
-#gui.o      : gui.cc      game.h graphic.h
-#graphic.o  : graphic.cc  graphic.h tools.h
+project.o : project.cc  game.h
+game.o  : game.cc     game.h brick.h ball.h paddle.h message.h tools.h constants.h
+brick.o  : brick.cc    brick.h tools.h constants.h message.h
+ball.o  : ball.cc     ball.h tools.h constants.h message.h
+paddle.o : paddle.cc   paddle.h tools.h constants.h message.h
+message.o : message.cc  message.h
+tools.o : tools.cc    tools.h
+#gui.o : gui.cc      game.h graphic.h
+#graphic.o : graphic.cc  graphic.h tools.h
 
 clean:
 	rm -f *.o $(TARGET)
