@@ -2,7 +2,7 @@
 #define GAME_H
 
 namespace game {
-    bool read(char* file_name);
+    bool read(const char* file_name);
     void reset();
 }
 
