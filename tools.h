@@ -1,9 +1,6 @@
 #include <cmath>
 
 
-constexpr double epsil_zero = 0.125;
-
-
 struct Point {
     double x = 0.0;
     double y = 0.0;
