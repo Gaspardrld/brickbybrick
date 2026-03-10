@@ -20,11 +20,11 @@ struct Square {
 };
 
 
-double Norme(Point v);
+double Norm(Point v);
 
-double Norme_Au_Carre(Point v);
+double Norm_Squared(Point v);
 
-double Produit_Scalaire(Point a, Point b);
+double Dot_Product(Point a, Point b);
 
 double Distance(Point a, Point b);
 
