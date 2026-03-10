@@ -125,9 +125,9 @@ namespace {
                     return false;
                 }
 
-                for (size_t i = 0; i < bricks.size(); ++i) {
-                    if (squares_intersect(new_brick->get_form(), bricks[i]->get_form(), false)) {
-                        cout << message::collision_bricks(nb_bricks_read, i);
+                for (size_t i = 0; i <bricks.size(); ++i) {
+                    if (squares_intersect(new_brick->get_form(), bricks[i]->get_form(), true)) {
+                        cout << message::collision_bricks(nb_bricks_read, i+1);
                         delete new_brick;
                         return false;
                     }
