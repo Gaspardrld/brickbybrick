@@ -56,7 +56,7 @@ bool circles_intersect(const Circle& c1, const Circle& c2, bool use_tolerance) {
     return dist<(c1.radius + c2.radius + tol);
 }
 
-bool circle_square_intersect(const Circle& c, const Square& s, bool use_tolerancee) {
+bool circle_square_intersect(const Circle& c, const Square& s, bool use_tolerance) {
     double tol = use_tolerance ? epsil_zero : 0.0;
     double radius_with_tol = c.radius + tol;
     Point closest = closest_point_on_square(c.center, s);
