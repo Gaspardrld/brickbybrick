@@ -27,7 +27,7 @@ Point closest_point_on_square(Point p, const Square& s) {
     return {closest_x, closest_y};
 }
 
-bool point_in_square(Point p, const Square& s, bool use_tolerance = true) {
+bool point_in_square(Point p, const Square& s, bool use_tolerance) {
     double tol= use_tolerance ? epsil_zero : 0.0;
     double half = s.side/2.0;
 
@@ -37,7 +37,7 @@ bool point_in_square(Point p, const Square& s, bool use_tolerance = true) {
     return in_x and in_y;
 }
 
-bool is_circle_arc_in_bounds(double x_center, double y_center, double radius, double x_max , bool use_tolerance = true) {
+bool is_circle_arc_in_bounds(double x_center, double y_center, double radius, double x_max , bool use_tolerance) {
     double tol = use_tolerance ? epsil_zero : 0.0;
     double radicand = radius * radius - y_center * y_center;
     if (radicand < 0) return false;
@@ -49,14 +49,14 @@ bool is_circle_arc_in_bounds(double x_center, double y_center, double radius, do
     return (x1 >= 0 and x1 < x_max-tol and x2 >= 0 and x2 < x_max-tol);
 }
 
-bool circles_intersect(const Circle& c1, const Circle& c2, bool use_tolerance = true) {
+bool circles_intersect(const Circle& c1, const Circle& c2, bool use_tolerance) {
     double tol = use_tolerance ? epsil_zero : 0.0;
     double dist = Distance(c1.center, c2.center);
 
     return dist<(c1.radius + c2.radius + tol);
 }
 
-bool circle_square_intersect(const Circle& c, const Square& s, bool use_tolerance = true) {
+bool circle_square_intersect(const Circle& c, const Square& s, bool use_tolerancee) {
     double tol = use_tolerance ? epsil_zero : 0.0;
     double radius_with_tol = c.radius + tol;
     Point closest = closest_point_on_square(c.center, s);
@@ -65,7 +65,7 @@ bool circle_square_intersect(const Circle& c, const Square& s, bool use_toleranc
     return Norm_Squared(diff)<(radius_with_tol * radius_with_tol);
 }
 
-bool squares_intersect(const Square& s1, const Square& s2, bool use_tolerance = true) {
+bool squares_intersect(const Square& s1, const Square& s2, bool use_tolerance) {
     double tol = use_tolerance ? epsil_zero : 0.0;
     double half1 = s1.side/2.0;
     double half2 = s2.side/2.0;
@@ -76,7 +76,7 @@ bool squares_intersect(const Square& s1, const Square& s2, bool use_tolerance = 
     return not(sep_x or sep_y);
 }
 
-bool circle_in_square(const Circle& c, const Square& arena,bool use_tolerance = true, bool ignore_bottom = false) {
+bool circle_in_square(const Circle& c, const Square& arena,bool use_tolerance, bool ignore_bottom) {
     double tol  = use_tolerance ? epsil_zero : 0.0;
     double half = arena.side / 2.0;
 
@@ -87,7 +87,7 @@ bool circle_in_square(const Circle& c, const Square& arena,bool use_tolerance = 
     return in_x and in_top and in_bot;
 }
 
-bool square_in_square(const Square& inner, const Square& outer, bool use_tolerance = true) {
+bool square_in_square(const Square& inner, const Square& outer, bool use_tolerance) {
     double half = inner.side / 2.0;
     Point  bottom_left ={inner.center.x - half, inner.center.y - half};
     Point  bottom_right={inner.center.x + half, inner.center.y - half};
