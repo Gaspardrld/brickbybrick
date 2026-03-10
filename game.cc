@@ -127,11 +127,11 @@ namespace {
 
                 for (size_t i = 0; i <bricks.size(); ++i) {
                     if (squares_intersect(new_brick->get_form(), bricks[i]->get_form(), true)) {
-                        cout << message::collision_bricks(nb_bricks_read, i+1);
+                        cout << message::collision_bricks(i, nb_bricks_read+1);
                         delete new_brick;
                         return false;
                     }
-}
+                }           
 
                  if (circle_square_intersect(paddle.get_circle(), new_brick->get_form())) {
                     cout << message::collision_paddle_brick(nb_bricks_read);
