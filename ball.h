@@ -1,3 +1,6 @@
+#ifndef BALL_H
+#define BALL_H
+
 #include "tools.h"
 #include "constante.h"
 
@@ -18,3 +21,5 @@ public :
     Ball(double x, double y, double radius, double d_x, double d_y) 
     : form({{x,y}, radius}), delta({d_x, d_y}) {}
 };
+
+#endif
