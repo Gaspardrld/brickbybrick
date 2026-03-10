@@ -42,7 +42,7 @@ namespace {
 
             case EXPECT_SCORE: {
                 current_state = EXPECT_LIVES;
-                if (!(iss >> total_score)) {
+                if (!(iss >> total_score)) { 
                     return false;
                 }
                 if (total_score < 0) {
@@ -52,6 +52,7 @@ namespace {
                 break;
             }
             
+
             case EXPECT_LIVES: {
                 current_state = EXPECT_PADDLE;
                 if (!(iss >> nb_lives)) {
@@ -64,6 +65,7 @@ namespace {
                 break;
             }
 
+
             case EXPECT_PADDLE: {
                 current_state = EXPECT_NB_BRICKS;
                 double x, y, radius;
@@ -75,6 +77,7 @@ namespace {
                 if (!paddle.validate_paddle()) return false;
                 break;
             }
+
 
             case EXPECT_NB_BRICKS: {
                 if (!(iss >> nb_bricks)) {
@@ -93,6 +96,7 @@ namespace {
                 }
                 break;
             }
+
 
             case EXPECT_BRICKS: {
                 int type;
@@ -120,15 +124,30 @@ namespace {
                     delete new_brick;
                     return false;
                 }
+
+                for (size_t i = 0; i < bricks.size(); ++i) {
+                    if (square_in_square(new_brick->get_form(), bricks[i]->get_form())) {
+                        cout << message::collision_bricks(nb_bricks_read, i);
+                        delete new_brick;
+                        return false;
+                    }
+}
+
+                 if (circle_square_intersect(paddle.get_circle(), new_brick->get_form())) {
+                    cout << message::collision_paddle_brick(nb_bricks_read);
+                    delete new_brick;
+                    return false;
+                }
                 
                 bricks.push_back(new_brick);
-                nb_bricks_read++;
+                nb_bricks_read++; //incrémentation du nombre de briques lues
 
                 if (nb_bricks_read == nb_bricks) {
                     current_state = EXPECT_NB_BALLS;
                 }
                 break;
             }
+
 
             case EXPECT_NB_BALLS: {
                 if (!(iss >> nb_balls)) {
@@ -148,6 +167,7 @@ namespace {
                 break;
             }
 
+
             case EXPECT_BALLS: {
                 double x, y, radius, delta_x, delta_y;
                 if (!(iss >> x >> y >> radius >> delta_x >> delta_y)) {
@@ -157,9 +177,28 @@ namespace {
                 if (!ball.valid_Ball()) {
                     return false;
                 }
+
+                for (size_t i = 0; i < bricks.size(); ++i) {
+                    if (circle_square_intersect(ball.get_circle(), bricks[i]->get_form())) { // vérification de la collision avec les briques déjà lues
+                        cout << message::collision_ball_brick(nb_balls_read, i);
+                        return false;
+                    }
+                }
+                
+                for (size_t i = 0; i < balls.size(); ++i) {
+                    if (circles_intersect(ball.get_circle(), balls[i].get_circle())) { // vérification de la collision avec les autres balles déjà lues
+                        cout << message::collision_balls(nb_balls_read, i);
+                        return false;
+                    }
+                }
+                
+                if (circles_intersect(paddle.get_circle(), ball.get_circle())) { // vérification de la collision avec la raquette
+                    cout << message::collision_paddle_ball(nb_balls_read);
+                    return false;
+                }
+
                 balls.push_back(ball);
                 nb_balls_read++;
-                
                 if (nb_balls_read == nb_balls) {
                     current_state = EXPECT_SCORE;
                 }
@@ -180,7 +219,7 @@ namespace game {
         nb_bricks_read = 0;
         nb_balls_read = 0;
 
-        for (auto brick : bricks) {
+        for (auto brick : bricks) { 
             delete brick;
         }
 
@@ -201,21 +240,22 @@ namespace game {
             istringstream iss(line);
             string first_word;
 
-            if (!(iss >> first_word) || first_word[0] == '#') {
+            if (!(iss >> first_word) || first_word[0] == '#') { //ignore les lignes vides ou les commentaires
                 continue;
             }
 
-            if (!decode_line(line)) {
+            if (!decode_line(line)) { // si il y a une erreur de lecture ou de validation, on affiche le message d'erreur correspondant et on reset le jeu
                 reset();
                 return false;
             }
         }
 
         file.close();
-        if (current_state != EXPECT_SCORE) {
+        if (current_state != EXPECT_SCORE) { //vérification que le fichier est complet et que tous les éléments attendus ont été lus
             reset();
             return false;
-        }       
+        }    
+        cout << message::success();  
         return true;
     }
 }
