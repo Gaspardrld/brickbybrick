@@ -1,3 +1,6 @@
+#ifndef PADDLE_H
+#define PADDLE_H
+
 #include "tools.h"
 #include "constante.h"
 
@@ -12,3 +15,5 @@ public :
     Circle get_circle() const;
     bool validate_paddle() const;
 };
+
+#endif

@@ -1,3 +1,6 @@
+#ifndef BRICK_H
+#define BRICK_H 
+
 #include "tools.h"
 #include "constante.h"
 
@@ -34,3 +37,5 @@ public :
     Split_Brick(double x, double y, double side)
     : Brick(x,y,side) {}
 };
+
+#endif

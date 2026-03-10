@@ -1,4 +1,10 @@
+#ifndef TOOLS_H
+#define TOOLS_H
+
 #include <cmath>
+
+
+constexpr double epsil_zero = 0.125;
 
 
 struct Point {
@@ -40,3 +46,5 @@ bool circle_in_square(const Circle& c, const Square& arena,bool use_tolerance = 
 bool square_in_square(const Square& inner, const Square& outer,bool use_tolerance = true);
 
 Point closest_point_on_square(Point p, const Square& s);
+
+#endif
