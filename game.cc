@@ -234,7 +234,6 @@ namespace game {
         if (file.fail()) {
             return false;
         }
-
         string line;
         while (getline(file, line)) {
             istringstream iss(line);
@@ -252,6 +251,7 @@ namespace game {
 
         file.close();
         if (current_state != EXPECT_SCORE) { //vérification que le fichier est complet et que tous les éléments attendus ont été lus
+            cout << "bombo";
             reset();
             return false;
         }    
