@@ -20,11 +20,11 @@ bool Ball::valid_Ball() const {
 }
 
 double Ball::norm_Delta() const {
-    return Norme(delta);
+    return Norm(delta);
 }
 
 double Ball::norm_Delta_Squared() const {
-    return Norme_Au_Carre(delta);
+    return Norm_Squared(delta);
 }
 
 Circle Ball::get_circle() const {

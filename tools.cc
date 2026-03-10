@@ -3,20 +3,20 @@
 #include <cmath>      // std::sqrt, std::abs
 
 
-double Norme(Point v) {
+double Norm(Point v) {
     return std::sqrt(v.x * v.x + v.y * v.y);
 }
 
-double Norme_Au_Carre(Point v) {
+double Norm_Squared(Point v) {
     return v.x * v.x + v.y * v.y;
 }
 
-double Produit_Scalaire(Point a, Point b) {
+double Dot_Product(Point a, Point b) {
     return a.x * b.x + a.y * b.y;
 }
 
 double Distance(Point a, Point b) {
-    return Norme({a.x - b.x, a.y - b.y});
+    return Norm({a.x - b.x, a.y - b.y});
 }
 
 
@@ -62,7 +62,7 @@ bool circle_square_intersect(const Circle& c, const Square& s, bool use_toleranc
     Point closest = closest_point_on_square(c.center, s);
     Point diff = {c.center.x - closest.x, c.center.y - closest.y};
 
-    return Norme_Au_Carre(diff)<(radius_with_tol * radius_with_tol);
+    return Norm_Squared(diff)<(radius_with_tol * radius_with_tol);
 }
 
 bool squares_intersect(const Square& s1, const Square& s2, bool use_tolerance = true) {
