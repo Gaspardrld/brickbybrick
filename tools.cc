@@ -20,6 +20,7 @@ double Distance(Point a, Point b) {
 }
 
 
+
 Point closest_point_on_square(Point p, const Square& s) {
     double half = s.side/2.0;
     double closest_x = std::max(s.center.x - half,std::min(p.x, s.center.x + half));
@@ -70,8 +71,8 @@ bool squares_intersect(const Square& s1, const Square& s2, bool use_tolerance) {
     double half1 = s1.side/2.0;
     double half2 = s2.side/2.0;
 
-    bool sep_x = s1.center.x + half1 + tol < s2.center.x - half2 or s2.center.x + half2 + tol < s1.center.x - half1;
-    bool sep_y = s1.center.y + half1 + tol < s2.center.y - half2 or s2.center.y + half2 + tol < s1.center.y - half1;
+    bool sep_x = s1.center.x + half1 + tol <= s2.center.x - half2 or s2.center.x + half2 + tol <= s1.center.x - half1;
+    bool sep_y = s1.center.y + half1 + tol <= s2.center.y - half2 or s2.center.y + half2 + tol <= s1.center.y - half1;
 
     return not(sep_x or sep_y);
 }
