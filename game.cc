@@ -248,7 +248,6 @@ namespace game {
             if (!(iss >> first_word) || first_word[0] == '#') { //ignore les lignes vides ou les commentaires
                 continue;
             }
-            cout << "Etat actuel : " << current_state << endl;
             if (!decode_line(line)) { // si il y a une erreur de lecture ou de validation, on affiche le message d'erreur correspondant et on reset le jeu
                 reset();
                 return false;
@@ -257,11 +256,9 @@ namespace game {
 
         file.close();
         if (current_state != FINISH) { //vérification que le fichier est complet et que tous les éléments attendus ont été lus
-            cout << "bombo";
             reset();
             return false;
-        } 
-        cout << "bombo";   
+        }  
         cout << message::success();  
         return true;
     }
