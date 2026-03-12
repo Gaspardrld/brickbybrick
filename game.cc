@@ -19,7 +19,8 @@ namespace {
         EXPECT_NB_BRICKS,
         EXPECT_BRICKS,
         EXPECT_NB_BALLS,
-        EXPECT_BALLS
+        EXPECT_BALLS,
+        FINISH,
     };
 
     State current_state;
@@ -162,7 +163,7 @@ namespace {
                 if (nb_balls > 0) {
                     current_state = EXPECT_BALLS;
                 } else {
-                    current_state = EXPECT_SCORE;
+                    current_state = FINISH;
                 }
                 break;
             }
@@ -200,9 +201,14 @@ namespace {
                 balls.push_back(ball);
                 nb_balls_read++;
                 if (nb_balls_read == nb_balls) {
-                    current_state = EXPECT_SCORE;
+                    current_state = FINISH;
+                    cout<<"GRAH";
                 }
                 break;
+            }
+
+            case FINISH: {
+                return false; // si on reçoit une ligne alors que le fichier est déjà complet, c'est une erreur
             }
         }
         return true;
@@ -242,7 +248,7 @@ namespace game {
             if (!(iss >> first_word) || first_word[0] == '#') { //ignore les lignes vides ou les commentaires
                 continue;
             }
-
+            cout << "Etat actuel : " << current_state << endl;
             if (!decode_line(line)) { // si il y a une erreur de lecture ou de validation, on affiche le message d'erreur correspondant et on reset le jeu
                 reset();
                 return false;
@@ -250,11 +256,12 @@ namespace game {
         }
 
         file.close();
-        if (current_state != EXPECT_SCORE) { //vérification que le fichier est complet et que tous les éléments attendus ont été lus
+        if (current_state != FINISH) { //vérification que le fichier est complet et que tous les éléments attendus ont été lus
             cout << "bombo";
             reset();
             return false;
-        }    
+        } 
+        cout << "bombo";   
         cout << message::success();  
         return true;
     }
