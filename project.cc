@@ -4,7 +4,7 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
-    game game;
+    Game game;
     if (argc != 2) {
         return 1;
     }
