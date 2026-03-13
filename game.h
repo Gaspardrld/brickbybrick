@@ -8,8 +8,6 @@
 #include <vector>
 #include <string>
 
-using namespace std;
-
 class game {
     private:
         bool decode_line(const std::string& line);
@@ -18,8 +16,8 @@ class game {
         int nb_bricks;
         int nb_balls;
         Paddle paddle;        
-        vector<Ball> balls;     
-        vector<Brick*> bricks; 
+        std::vector<Ball> balls;     
+        std::vector<Brick*> bricks; 
 
         enum State {
             EXPECT_SCORE,
