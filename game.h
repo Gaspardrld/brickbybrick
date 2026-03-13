@@ -11,10 +11,10 @@
 class game {
     private:
         bool decode_line(const std::string& line);
-        double total_score;
-        int nb_lives;
-        int nb_bricks;
-        int nb_balls;
+        double total_score = 0;
+        int nb_lives = 0;
+        int nb_bricks = 0;
+        int nb_balls = 0;
         Paddle paddle;        
         std::vector<Ball> balls;     
         std::vector<Brick*> bricks; 
@@ -31,7 +31,7 @@ class game {
         };
         int nb_bricks_read = 0;
         int nb_balls_read = 0;
-        State current_state;
+        State current_state = EXPECT_SCORE; // le reset() le fait déjà, mais on le met ici pour être sûr que c'est bien initialisé à la création de l'objet
 
     public:
         void reset();
