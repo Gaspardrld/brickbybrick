@@ -8,7 +8,7 @@
 #include <vector>
 #include <string>
 
-class game {
+class Game {
     private:
         bool decode_line(const std::string& line);
         double total_score = 0;

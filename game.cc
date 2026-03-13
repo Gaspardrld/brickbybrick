@@ -7,7 +7,7 @@
 
 using namespace std;
 
-bool game :: decode_line(const string& line) {
+bool Game :: decode_line(const string& line) {
 
     istringstream iss(line);
     
@@ -187,7 +187,7 @@ bool game :: decode_line(const string& line) {
 
 
 
-void game :: reset() {
+void Game :: reset() {
     total_score = 0;
     nb_lives = 0;
     current_state = EXPECT_SCORE;
@@ -202,7 +202,7 @@ void game :: reset() {
     balls.clear();   
 }
 
-bool game :: read(const char* file_name) {
+bool Game :: read(const char* file_name) {
     reset(); 
     ifstream file(file_name);
     if (file.fail()) {
