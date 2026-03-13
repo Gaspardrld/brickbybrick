@@ -179,7 +179,7 @@ bool game :: decode_line(const string& line) {
         }
 
         case FINISH: {
-            return true; // si on reçoit une ligne alors que le fichier est déjà complet, c'est une erreur
+            return true; 
         }
     }
     return true;
