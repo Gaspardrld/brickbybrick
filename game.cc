@@ -7,6 +7,17 @@
 
 using namespace std;
 
+Game :: Game() : 
+    total_score(0), 
+    nb_lives(0), 
+    nb_bricks(0), 
+    nb_balls(0), 
+    nb_bricks_read(0), 
+    nb_balls_read(0), 
+    current_state(EXPECT_SCORE)
+{    
+}
+
 bool Game :: decode_line(const string& line) {
 
     istringstream iss(line);
