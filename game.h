@@ -8,32 +8,35 @@
 #include <vector>
 #include <string>
 
+
+enum State {
+    EXPECT_SCORE,
+    EXPECT_LIVES,
+    EXPECT_PADDLE,
+    EXPECT_NB_BRICKS,
+    EXPECT_BRICKS,
+    EXPECT_NB_BALLS,
+    EXPECT_BALLS,
+    FINISH,
+};
+
 class Game {
     private:
         bool decode_line(const std::string& line);
-        double total_score = 0;
-        int nb_lives = 0;
-        int nb_bricks = 0;
-        int nb_balls = 0;
+        double total_score;
+        int nb_lives;
+        int nb_bricks;
+        int nb_balls;
         Paddle paddle;        
         std::vector<Ball> balls;     
-        std::vector<Brick*> bricks; 
+        std::vector<Brick*> bricks; #polymorphisme pour éviter les problèmes de slicing
 
-        enum State {
-            EXPECT_SCORE,
-            EXPECT_LIVES,
-            EXPECT_PADDLE,
-            EXPECT_NB_BRICKS,
-            EXPECT_BRICKS,
-            EXPECT_NB_BALLS,
-            EXPECT_BALLS,
-            FINISH,
-        };
-        int nb_bricks_read = 0;
-        int nb_balls_read = 0;
-        State current_state = EXPECT_SCORE; // le reset() le fait déjà, mais on le met ici pour être sûr que c'est bien initialisé à la création de l'objet
+        int nb_bricks_read;
+        int nb_balls_read;
+        State current_state;
 
     public:
+        Game();
         void reset();
         bool read(const char* file_name);
 };
