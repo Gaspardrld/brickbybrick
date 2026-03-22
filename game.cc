@@ -131,7 +131,7 @@ bool Game :: decode_line(const string& line) {
                     cout << message::collision_paddle_brick(nb_bricks_read);
                     delete new_brick;
                     return false;
-            }
+                }
             
             bricks.push_back(new_brick);
             nb_bricks_read++; //incrémentation du nombre de briques lues
