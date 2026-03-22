@@ -11,6 +11,16 @@
 
 class Game {
     private:
+        enum State {
+            EXPECT_SCORE,
+            EXPECT_LIVES,
+            EXPECT_PADDLE,
+            EXPECT_NB_BRICKS,
+            EXPECT_BRICKS,
+            EXPECT_NB_BALLS,
+            EXPECT_BALLS,
+            FINISH,
+        };
         bool decode_line(const std::string& line);
         double total_score;
         int nb_lives;
@@ -24,16 +34,6 @@ class Game {
         int nb_balls_read;
         State current_state;
 
-        enum State {
-            EXPECT_SCORE,
-            EXPECT_LIVES,
-            EXPECT_PADDLE,
-            EXPECT_NB_BRICKS,
-            EXPECT_BRICKS,
-            EXPECT_NB_BALLS,
-            EXPECT_BALLS,
-            FINISH,
-        };
 
     public:
         Game();
