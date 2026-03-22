@@ -9,11 +9,11 @@ private :
     Circle form;
     Point delta;
 
-    double norm_Delta() const; // mise en private car uniquement pour valid ball
-    double norm_Delta_Squared() const;  // idem que norm_Delta
+    double norm_delta() const; // mise en private car uniquement pour valid ball
+    double norm_delta_squared() const;  // idem que norm_Delta
 
 public :
-    bool valid_Ball() const;
+    bool valid_ball() const;
 
     Circle get_circle() const;
     Point  get_delta()  const;
