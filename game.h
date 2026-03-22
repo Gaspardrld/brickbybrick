@@ -9,17 +9,6 @@
 #include <string>
 
 
-enum State {
-    EXPECT_SCORE,
-    EXPECT_LIVES,
-    EXPECT_PADDLE,
-    EXPECT_NB_BRICKS,
-    EXPECT_BRICKS,
-    EXPECT_NB_BALLS,
-    EXPECT_BALLS,
-    FINISH,
-};
-
 class Game {
     private:
         bool decode_line(const std::string& line);
@@ -34,6 +23,17 @@ class Game {
         int nb_bricks_read;
         int nb_balls_read;
         State current_state;
+
+        enum State {
+            EXPECT_SCORE,
+            EXPECT_LIVES,
+            EXPECT_PADDLE,
+            EXPECT_NB_BRICKS,
+            EXPECT_BRICKS,
+            EXPECT_NB_BALLS,
+            EXPECT_BALLS,
+            FINISH,
+        };
 
     public:
         Game();
