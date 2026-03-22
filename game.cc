@@ -112,7 +112,7 @@ bool Game :: decode_line(const string& line) {
                     return false;
             }
 
-            if (!new_brick->valid_Brick()){
+            if (!new_brick->valid_brick()){
                 delete new_brick;
                 return false;
             }
@@ -170,7 +170,7 @@ bool Game :: decode_line(const string& line) {
                 return false;
             }
             Ball ball(x, y, radius, delta_x, delta_y);
-            if (!ball.valid_Ball()) {
+            if (!ball.valid_ball()) {
                 return false;
             }
 
