@@ -29,7 +29,7 @@ class Game {
         int nb_balls;
         Paddle paddle;        
         std::vector<Ball> balls;     
-        std::vector<Brick*> bricks; #polymorphisme pour éviter les problèmes de slicing
+        std::vector<Brick*> bricks;//polymorphisme pour éviter les problèmes de slicing
 
         int nb_bricks_read;
         int nb_balls_read;
