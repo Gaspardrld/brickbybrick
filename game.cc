@@ -7,6 +7,10 @@
 
 using namespace std;
 
+namespace {
+    enum BrickType { RAINBOW = 0, BALL_BRICK = 1, SPLIT_BRICK = 2 };
+}
+
 Game :: Game() : 
     total_score(0), 
     nb_lives(0), 
@@ -88,21 +92,25 @@ bool Game :: decode_line(const string& line) {
             if (!(iss >> type >> x >> y >> side)) {
                 return false;
             }
+
             Brick* new_brick = nullptr;
-            if (type == 0) {
-                int hit_points;
-                if (!(iss >> hit_points)) {
-                return false;
+            switch (type) {
+                case RAINBOW: {
+                    int hit_points;
+                    if (!(iss >> hit_points)) return false;
+                    new_brick = new Rainbow_Brick(x, y, side, hit_points);
+                    break;
+                }
+                case BALL_BRICK:
+                    new_brick = new Ball_Brick(x, y, side);
+                    break;
+                case SPLIT_BRICK:
+                    new_brick = new Split_Brick(x, y, side);
+                    break;
+                default:
+                    cout << message::invalid_brick_type(type);
+                    return false;
             }
-                new_brick = new Rainbow_Brick(x, y, side, hit_points);
-            } else if (type == 1) {
-                new_brick = new Ball_Brick(x, y, side);
-            } else if (type == 2) {
-                new_brick = new Split_Brick(x, y, side);
-            } else {
-                cout << message::invalid_brick_type(type);
-                return false;
-            } 
 
             if (!new_brick->valid_Brick()){
                 delete new_brick;
@@ -120,9 +128,9 @@ bool Game :: decode_line(const string& line) {
 
                 if (circle_square_intersect(paddle.get_circle(),
                                              new_brick->get_form())) {
-                cout << message::collision_paddle_brick(nb_bricks_read);
-                delete new_brick;
-                return false;
+                    cout << message::collision_paddle_brick(nb_bricks_read);
+                    delete new_brick;
+                    return false;
             }
             
             bricks.push_back(new_brick);
