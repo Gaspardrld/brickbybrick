@@ -23,13 +23,13 @@ struct Square {
 };
 
 
-double Norm(Point v);
+double norm(Point v);
 
-double Norm_Squared(Point v);
+double norm_squared(Point v);
 
-double Dot_Product(Point a, Point b);
+double dot_product(Point a, Point b);
 
-double Distance(Point a, Point b);
+double distance(Point a, Point b);
 
 bool is_circle_arc_in_bounds(double x_center, double y_center, 
                     double radius, double x_max , bool use_tolerance = true);

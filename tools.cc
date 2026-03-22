@@ -3,20 +3,20 @@
 #include <cmath>      // std::sqrt, std::abs
 
 
-double Norm(Point v) {
+double norm(Point v) {
     return std::sqrt(v.x * v.x + v.y * v.y);
 }
 
-double Norm_Squared(Point v) {
+double norm_squared(Point v) {
     return v.x * v.x + v.y * v.y;
 }
 
-double Dot_Product(Point a, Point b) {
+double dot_product(Point a, Point b) {
     return a.x * b.x + a.y * b.y;
 }
 
-double Distance(Point a, Point b) {
-    return Norm({a.x - b.x, a.y - b.y});
+double distance(Point a, Point b) {
+    return norm({a.x - b.x, a.y - b.y});
 }
 
 
@@ -53,7 +53,7 @@ bool is_circle_arc_in_bounds(double x_center, double y_center,
 
 bool circles_intersect(const Circle& c1, const Circle& c2, bool use_tolerance) {
     double tol = use_tolerance ? epsil_zero : 0.0;
-    double dist = Distance(c1.center, c2.center);
+    double dist = distance(c1.center, c2.center);
 
     return dist<(c1.radius + c2.radius + tol);
 }
@@ -64,7 +64,7 @@ bool circle_square_intersect(const Circle& c, const Square& s, bool use_toleranc
     Point closest = closest_point_on_square(c.center, s);
     Point diff = {c.center.x - closest.x, c.center.y - closest.y};
 
-    return Norm_Squared(diff)<(radius_with_tol * radius_with_tol);
+    return norm_squared(diff)<(radius_with_tol * radius_with_tol);
 }
 
 bool squares_intersect(const Square& s1, const Square& s2, bool use_tolerance) {
