@@ -2,6 +2,8 @@
 #include <algorithm>  // std::min, std::max
 #include <cmath>      // std::sqrt, std::abs
 
+//punch le singe il va bz avant gaspar
+
 
 double norm(Point v) {
     return std::sqrt(v.x * v.x + v.y * v.y);
