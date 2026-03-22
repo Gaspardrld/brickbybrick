@@ -11,7 +11,7 @@ protected :
     Square form;
 public :
     Square get_form() const;
-    bool valid_Brick() const;
+    bool valid_brick() const;
     Brick(double x, double y, double side) : form({{x,y}, side}) {}
 };
 

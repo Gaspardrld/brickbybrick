@@ -2,7 +2,7 @@
 #include "brick.h"
 #include "message.h"
 
-bool Brick::valid_Brick() const {
+bool Brick::valid_brick() const {
     if (form.side < brick_size_min) {
         std::cout << message::invalid_brick_size(form.side);
         return false;
