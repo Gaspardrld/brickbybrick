@@ -9,7 +9,7 @@ private :
     Circle form;
     Point delta;
 
-    double norm_Delta() const;   // méthode mise en private car utilisée uniquement pour valid ball
+    double norm_Delta() const; // mise en private car uniquement pour valid ball
     double norm_Delta_Squared() const;  // idem que norm_Delta
 
 public :

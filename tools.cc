@@ -38,7 +38,8 @@ bool point_in_square(Point p, const Square& s, bool use_tolerance) {
     return in_x and in_y;
 }
 
-bool is_circle_arc_in_bounds(double x_center, double y_center, double radius, double x_max , bool use_tolerance) {
+bool is_circle_arc_in_bounds(double x_center, double y_center,
+                     double radius, double x_max , bool use_tolerance) {
     double tol = use_tolerance ? epsil_zero : 0.0;
     double radicand = radius * radius - y_center * y_center;
     if (radicand < 0) return false;
@@ -71,19 +72,24 @@ bool squares_intersect(const Square& s1, const Square& s2, bool use_tolerance) {
     double half1 = s1.side/2.0;
     double half2 = s2.side/2.0;
 
-    bool sep_x = s1.center.x + half1 + tol <= s2.center.x - half2 or s2.center.x + half2 + tol <= s1.center.x - half1;
-    bool sep_y = s1.center.y + half1 + tol <= s2.center.y - half2 or s2.center.y + half2 + tol <= s1.center.y - half1;
+    bool sep_x = s1.center.x + half1 + tol <= s2.center.x - half2 
+                or s2.center.x + half2 + tol <= s1.center.x - half1;
+    bool sep_y = s1.center.y + half1 + tol <= s2.center.y - half2 
+                or s2.center.y + half2 + tol <= s1.center.y - half1;
 
     return not(sep_x or sep_y);
 }
 
-bool circle_in_square(const Circle& c, const Square& arena,bool use_tolerance, bool ignore_bottom) {
+bool circle_in_square(const Circle& c, const Square& arena,
+                        bool use_tolerance, bool ignore_bottom) {
     double tol  = use_tolerance ? epsil_zero : 0.0;
     double half = arena.side / 2.0;
 
-    bool in_x   = c.center.x - c.radius >= arena.center.x - half - tol and c.center.x + c.radius <= arena.center.x + half + tol;
+    bool in_x   = c.center.x - c.radius >= arena.center.x - half - tol 
+                and c.center.x + c.radius <= arena.center.x + half + tol;
     bool in_top = c.center.y + c.radius <= arena.center.y + half + tol;
-    bool in_bot = ignore_bottom ? true : c.center.y - c.radius >= arena.center.y - half - tol;
+    bool in_bot = ignore_bottom ? true 
+                                : c.center.y - c.radius >= arena.center.y - half - tol;
 
     return in_x and in_top and in_bot;
 }

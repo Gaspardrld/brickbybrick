@@ -110,14 +110,16 @@ bool Game :: decode_line(const string& line) {
             }
 
             for (size_t i = 0; i <bricks.size(); ++i) {
-                if (squares_intersect(new_brick->get_form(), bricks[i]->get_form(), false)) {
+                if (squares_intersect(new_brick->get_form(),
+                                     bricks[i]->get_form(), false)) {
                     cout << message::collision_bricks(i, nb_bricks_read);
                     delete new_brick;
                     return false;
                 }
             }           
 
-                if (circle_square_intersect(paddle.get_circle(), new_brick->get_form())) {
+                if (circle_square_intersect(paddle.get_circle(),
+                                             new_brick->get_form())) {
                 cout << message::collision_paddle_brick(nb_bricks_read);
                 delete new_brick;
                 return false;
@@ -153,7 +155,9 @@ bool Game :: decode_line(const string& line) {
 
 
         case EXPECT_BALLS: {
+
             double x, y, radius, delta_x, delta_y;
+            
             if (!(iss >> x >> y >> radius >> delta_x >> delta_y)) {
                 return false;
             }
@@ -162,21 +166,25 @@ bool Game :: decode_line(const string& line) {
                 return false;
             }
 
+            // vérification de la collision avec les briques déjà lues
             for (size_t i = 0; i < bricks.size(); ++i) {
-                if (circle_square_intersect(ball.get_circle(), bricks[i]->get_form())) { // vérification de la collision avec les briques déjà lues
+                if (circle_square_intersect(ball.get_circle(),
+                                            bricks[i]->get_form())) { 
                     cout << message::collision_ball_brick(nb_balls_read, i);
                     return false;
                 }
             }
-            
+
+            // vérification de la collision avec les autres balles déjà lues
             for (size_t i = 0; i < balls.size(); ++i) {
-                if (circles_intersect(ball.get_circle(), balls[i].get_circle())) { // vérification de la collision avec les autres balles déjà lues
+                if (circles_intersect(ball.get_circle(), balls[i].get_circle())) { 
                     cout << message::collision_balls(nb_balls_read, i);
                     return false;
                 }
             }
-            
-            if (circles_intersect(paddle.get_circle(), ball.get_circle())) { // vérification de la collision avec la raquette
+
+            // vérification de la collision avec la raquette
+            if (circles_intersect(paddle.get_circle(), ball.get_circle())) { 
                 cout << message::collision_paddle_ball(nb_balls_read);
                 return false;
             }
@@ -224,16 +232,16 @@ bool Game :: read(const char* file_name) {
         istringstream iss(line);
         string first_word;
 
-        if (!(iss >> first_word) || first_word[0] == '#') { //ignore les lignes vides ou les commentaires
+        if (!(iss >> first_word) || first_word[0] == '#') { //ignore vides/commentaires
             continue;
         }
-        if (!decode_line(line)) { // si il y a une erreur de lecture ou de validation, on affiche le message d'erreur correspondant et on reset le jeu
+        if (!decode_line(line)) { //  affiche le message d'erreur correspondant + reset
             reset();
             return false;
         }
     }
     file.close();
-    if (current_state != FINISH) { //vérification que le fichier est complet et que tous les éléments attendus ont été lus
+    if (current_state != FINISH) { //vérification fichier complet et éléments lus      
         reset();
         return false;
     }  
