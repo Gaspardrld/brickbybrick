@@ -29,34 +29,34 @@ bool Game::decode_line(const string& line) {
     switch (current_state) {
 
         case EXPECT_SCORE:
-            if (!verif_score(iss, total_score)) return false;
+            if (!verif_score(iss)) return false;
             current_state = EXPECT_LIVES;
             break;
 
         case EXPECT_LIVES:
-            if (!verif_lives(iss, nb_lives)) return false;
+            if (!verif_lives(iss)) return false;
             current_state = EXPECT_PADDLE;
             break;
 
         case EXPECT_PADDLE:
-            if (!verif_paddle(iss, paddle)) return false;
+            if (!verif_paddle(iss)) return false;
             current_state = EXPECT_NB_BRICKS;
             break;
 
         case EXPECT_NB_BRICKS:
-            if (!verif_nb_bricks(iss, nb_bricks)) return false;
+            if (!verif_nb_bricks(iss)) return false;
             break;
 
         case EXPECT_BRICKS:
-            if (!verif_brick(iss, nb_bricks_read, bricks, paddle)) return false;
+            if (!verif_brick(iss)) return false;
             break;
 
         case EXPECT_NB_BALLS:
-            if (!verif_nb_balls(iss, nb_balls)) return false;
+            if (!verif_nb_balls(iss)) return false;
             break;
 
         case EXPECT_BALLS:
-            if (!verif_balls(iss, nb_balls_read, balls, bricks, paddle)) return false;
+            if (!verif_balls(iss)) return false;
             break;
 
         case FINISH:
@@ -111,7 +111,7 @@ bool Game :: read(const char* file_name) {
 }
 
 
-bool Game :: verif_score(istringstream& iss, double& total_score) {
+bool Game :: verif_score(istringstream& iss) {
     if (!(iss >> total_score)) { 
         return false;
     }
@@ -123,7 +123,7 @@ bool Game :: verif_score(istringstream& iss, double& total_score) {
 }
 
 
-bool Game::verif_lives(istringstream& iss, int& nb_lives) {
+bool Game::verif_lives(istringstream& iss) {
     if (!(iss >> nb_lives)) {
         return false;
     }
@@ -135,7 +135,7 @@ bool Game::verif_lives(istringstream& iss, int& nb_lives) {
 }
 
 
-bool Game::verif_paddle(istringstream& iss, Paddle& paddle) {
+bool Game::verif_paddle(istringstream& iss) {
     double x, y, radius;
     if (!(iss >> x >> y >> radius)) {
         return false;
@@ -147,7 +147,7 @@ bool Game::verif_paddle(istringstream& iss, Paddle& paddle) {
 }
 
 
-bool Game::verif_nb_bricks(istringstream& iss, int& nb_bricks) {
+bool Game::verif_nb_bricks(istringstream& iss) {
     if (!(iss >> nb_bricks)) {
         return false;
     }
@@ -166,8 +166,7 @@ bool Game::verif_nb_bricks(istringstream& iss, int& nb_bricks) {
 }
 
 
-bool Game::verif_brick(istringstream& iss, int& nb_bricks_read,
-                             vector<Brick*>& bricks, Paddle& paddle) {
+bool Game::verif_brick(istringstream& iss) {
     int type;
     double x, y, side;
     if (!(iss >> type >> x >> y >> side)) {
@@ -225,7 +224,7 @@ bool Game::verif_brick(istringstream& iss, int& nb_bricks_read,
 }
 
 
-bool Game::verif_nb_balls(istringstream& iss, int& nb_balls) {
+bool Game::verif_nb_balls(istringstream& iss) {
     if (!(iss >> nb_balls)) {
         return false;
     }
@@ -244,8 +243,7 @@ bool Game::verif_nb_balls(istringstream& iss, int& nb_balls) {
 }
 
 
-bool Game::verif_balls(istringstream& iss, int& nb_balls_read, vector<Ball>& balls
-                                        ,vector<Brick*>& bricks, Paddle& paddle) {
+bool Game::verif_balls(istringstream& iss) {
     double x, y, radius, delta_x, delta_y;   
     if (!(iss >> x >> y >> radius >> delta_x >> delta_y)) {
         return false;
