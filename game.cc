@@ -22,192 +22,45 @@ Game :: Game() :
 {    
 }
 
-bool Game :: decode_line(const string& line) {
+bool Game::decode_line(const string& line) {
 
     istringstream iss(line);
-    
+
     switch (current_state) {
 
-        case EXPECT_SCORE: {
+        case EXPECT_SCORE:
+            if (!verif_score(iss, total_score)) return false;
             current_state = EXPECT_LIVES;
-            if (!(iss >> total_score)) { 
-                return false;
-            }
-            if (total_score < 0) {
-                cout << message::invalid_score(total_score);
-                return false;
-            }
             break;
-        }
-        
 
-        case EXPECT_LIVES: {
+        case EXPECT_LIVES:
+            if (!verif_lives(iss, nb_lives)) return false;
             current_state = EXPECT_PADDLE;
-            if (!(iss >> nb_lives)) {
-                return false;
-            }
-            if (nb_lives < 0) {
-                cout << message::invalid_lives(nb_lives);
-                return false;
-            }
             break;
-        }
 
-
-        case EXPECT_PADDLE: {
+        case EXPECT_PADDLE:
+            if (!verif_paddle(iss, paddle)) return false;
             current_state = EXPECT_NB_BRICKS;
-            double x, y, radius;
-            if (!(iss >> x >> y >> radius)) {
-                return false;
-            }
-            paddle = Paddle(x, y, radius);
-            
-            if (!paddle.validate_paddle()) return false;
             break;
-        }
 
-
-        case EXPECT_NB_BRICKS: {
-            if (!(iss >> nb_bricks)) {
-                return false;
-            }
-            if (nb_bricks < 0) {
-                return false;
-            }
-            
-            nb_bricks_read = 0;
-            
-            if (nb_bricks > 0) {
-                current_state = EXPECT_BRICKS;
-            } else {
-                current_state = EXPECT_NB_BALLS;
-            }
+        case EXPECT_NB_BRICKS:
+            if (!verif_nb_bricks(iss, nb_bricks)) return false;
             break;
-        }
 
-
-        case EXPECT_BRICKS: {
-            int type;
-            double x, y, side;
-            if (!(iss >> type >> x >> y >> side)) {
-                return false;
-            }
-
-            Brick* new_brick = nullptr;
-            switch (type) {
-                case RAINBOW: {
-                    int hit_points;
-                    if (!(iss >> hit_points)) return false;
-                    new_brick = new Rainbow_Brick(x, y, side, hit_points);
-                    break;
-                }
-                case BALL_BRICK:
-                    new_brick = new Ball_Brick(x, y, side);
-                    break;
-                case SPLIT_BRICK:
-                    new_brick = new Split_Brick(x, y, side);
-                    break;
-                default:
-                    cout << message::invalid_brick_type(type);
-                    return false;
-            }
-
-            if (!new_brick->valid_brick()){
-                delete new_brick;
-                return false;
-            }
-
-            for (size_t i = 0; i <bricks.size(); ++i) {
-                if (squares_intersect(new_brick->get_form(),
-                                     bricks[i]->get_form(), false)) {
-                    cout << message::collision_bricks(i, nb_bricks_read);
-                    delete new_brick;
-                    return false;
-                }
-            }           
-
-                if (circle_square_intersect(paddle.get_circle(),
-                                             new_brick->get_form())) {
-                    cout << message::collision_paddle_brick(nb_bricks_read);
-                    delete new_brick;
-                    return false;
-                }
-            
-            bricks.push_back(new_brick);
-            nb_bricks_read++; //incrémentation du nombre de briques lues
-
-            if (nb_bricks_read == nb_bricks) {
-                current_state = EXPECT_NB_BALLS;
-            }
+        case EXPECT_BRICKS:
+            if (!verif_brick(iss, nb_bricks_read, bricks, paddle)) return false;
             break;
-        }
 
-
-        case EXPECT_NB_BALLS: {
-            if (!(iss >> nb_balls)) {
-                return false;
-            }
-            if (nb_balls < 0) {
-                return false;
-            }
-            
-            nb_balls_read = 0;
-            
-            if (nb_balls > 0) {
-                current_state = EXPECT_BALLS;
-            } else {
-                current_state = FINISH;
-            }
+        case EXPECT_NB_BALLS:
+            if (!verif_nb_balls(iss, nb_balls)) return false;
             break;
-        }
 
-
-        case EXPECT_BALLS: {
-
-            double x, y, radius, delta_x, delta_y;
-            
-            if (!(iss >> x >> y >> radius >> delta_x >> delta_y)) {
-                return false;
-            }
-            Ball ball(x, y, radius, delta_x, delta_y);
-            if (!ball.valid_ball()) {
-                return false;
-            }
-
-            // vérification de la collision avec les briques déjà lues
-            for (size_t i = 0; i < bricks.size(); ++i) {
-                if (circle_square_intersect(ball.get_circle(),
-                                            bricks[i]->get_form())) { 
-                    cout << message::collision_ball_brick(nb_balls_read, i);
-                    return false;
-                }
-            }
-
-            // vérification de la collision avec les autres balles déjà lues
-            for (size_t i = 0; i < balls.size(); ++i) {
-                if (circles_intersect(ball.get_circle(), balls[i].get_circle())) { 
-                    cout << message::collision_balls(nb_balls_read, i);
-                    return false;
-                }
-            }
-
-            // vérification de la collision avec la raquette
-            if (circles_intersect(paddle.get_circle(), ball.get_circle())) { 
-                cout << message::collision_paddle_ball(nb_balls_read);
-                return false;
-            }
-
-            balls.push_back(ball);
-            nb_balls_read++;
-            if (nb_balls_read == nb_balls) {
-                current_state = FINISH;
-            }
+        case EXPECT_BALLS:
+            if (!verif_balls(iss, nb_balls_read, balls, bricks, paddle)) return false;
             break;
-        }
 
-        case FINISH: {
-            return true; 
-        }
+        case FINISH:
+            return true;
     }
     return true;
 }
@@ -254,5 +107,181 @@ bool Game :: read(const char* file_name) {
         return false;
     }  
     cout << message::success();  
+    return true;
+}
+
+
+bool Game :: verif_score(istringstream& iss, double& total_score) {
+    if (!(iss >> total_score)) { 
+        return false;
+    }
+    if (total_score < 0) {
+        cout << message::invalid_score(total_score);
+        return false;
+    }
+    return true;
+}
+
+
+bool Game::verif_lives(istringstream& iss, int& nb_lives) {
+    if (!(iss >> nb_lives)) {
+        return false;
+    }
+    if (nb_lives < 0) {
+        cout << message::invalid_lives(nb_lives);
+        return false;
+    }
+    return true;
+}
+
+
+bool Game::verif_paddle(istringstream& iss, Paddle& paddle) {
+    double x, y, radius;
+    if (!(iss >> x >> y >> radius)) {
+        return false;
+    }
+    paddle = Paddle(x, y, radius);
+    
+    if (!paddle.validate_paddle()) return false;
+    return true;
+}
+
+
+bool Game::verif_nb_bricks(istringstream& iss, int& nb_bricks) {
+    if (!(iss >> nb_bricks)) {
+        return false;
+    }
+    if (nb_bricks < 0) {
+        return false;
+    }
+    
+    nb_bricks_read = 0;
+    
+    if (nb_bricks > 0) {
+        current_state = EXPECT_BRICKS;
+    } else {
+        current_state = EXPECT_NB_BALLS;
+    }
+    return true;
+}
+
+
+bool Game::verif_brick(istringstream& iss, int& nb_bricks_read,
+                             vector<Brick*>& bricks, Paddle& paddle) {
+    int type;
+    double x, y, side;
+    if (!(iss >> type >> x >> y >> side)) {
+        return false;
+    }
+
+    Brick* new_brick = nullptr;
+    switch (type) {
+        case RAINBOW: {
+            int hit_points;
+            if (!(iss >> hit_points)) return false;
+            new_brick = new Rainbow_Brick(x, y, side, hit_points);
+            break;
+        }
+        case BALL_BRICK:
+            new_brick = new Ball_Brick(x, y, side);
+            break;
+        case SPLIT_BRICK:
+            new_brick = new Split_Brick(x, y, side);
+            break;
+        default:
+            cout << message::invalid_brick_type(type);
+            return false;
+    }
+
+    if (!new_brick->valid_brick()){
+        delete new_brick;
+        return false;
+    }
+
+    for (size_t i = 0; i <bricks.size(); ++i) {
+
+        if (squares_intersect(new_brick->get_form(),
+                                bricks[i]->get_form(), false)) {
+            cout << message::collision_bricks(i, nb_bricks_read);
+            delete new_brick;
+            return false;
+        }
+    }           
+
+    if (circle_square_intersect(paddle.get_circle(),
+                                    new_brick->get_form())) {
+        cout << message::collision_paddle_brick(nb_bricks_read);
+        delete new_brick;
+        return false;
+    }
+    
+    bricks.push_back(new_brick);
+    nb_bricks_read++; //incrémentation du nombre de briques lues
+
+    if (nb_bricks_read == nb_bricks) {
+        current_state = EXPECT_NB_BALLS;
+    }
+    return true;
+}
+
+
+bool Game::verif_nb_balls(istringstream& iss, int& nb_balls) {
+    if (!(iss >> nb_balls)) {
+        return false;
+    }
+    if (nb_balls < 0) {
+        return false;
+    }
+    
+    nb_balls_read = 0;
+    
+    if (nb_balls > 0) {
+        current_state = EXPECT_BALLS;
+    } else {
+        current_state = FINISH;
+    }
+    return true;
+}
+
+
+bool Game::verif_balls(istringstream& iss, int& nb_balls_read, vector<Ball>& balls
+                                        ,vector<Brick*>& bricks, Paddle& paddle) {
+    double x, y, radius, delta_x, delta_y;   
+    if (!(iss >> x >> y >> radius >> delta_x >> delta_y)) {
+        return false;
+    }
+    Ball ball(x, y, radius, delta_x, delta_y);
+    if (!ball.valid_ball()) {
+        return false;
+    }
+
+    // vérification de la collision avec les briques déjà lues
+    for (size_t i = 0; i < bricks.size(); ++i) {
+        if (circle_square_intersect(ball.get_circle(),
+                                    bricks[i]->get_form())) { 
+            cout << message::collision_ball_brick(nb_balls_read, i);
+            return false;
+        }
+    }
+
+    // vérification de la collision avec les autres balles déjà lues
+    for (size_t i = 0; i < balls.size(); ++i) {
+        if (circles_intersect(ball.get_circle(), balls[i].get_circle())) { 
+            cout << message::collision_balls(nb_balls_read, i);
+            return false;
+        }
+    }
+
+    // vérification de la collision avec la raquette
+    if (circles_intersect(paddle.get_circle(), ball.get_circle())) { 
+        cout << message::collision_paddle_ball(nb_balls_read);
+        return false;
+    }
+
+    balls.push_back(ball);
+    nb_balls_read++;
+    if (nb_balls_read == nb_balls) {
+        current_state = FINISH;
+    }
     return true;
 }
