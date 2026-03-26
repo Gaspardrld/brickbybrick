@@ -23,7 +23,6 @@ Game :: Game() :
 }
 
 bool Game::decode_line(const string& line) {
-
     istringstream iss(line);
 
     switch (current_state) {
