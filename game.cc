@@ -27,7 +27,6 @@ bool Game::decode_line(const string& line) {
     istringstream iss(line);
 
     switch (current_state) {
-
         case EXPECT_SCORE:
             if (!verif_score(iss)) return false;
             current_state = EXPECT_LIVES;
