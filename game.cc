@@ -171,7 +171,6 @@ bool Game::verif_brick(istringstream& iss) {
     if (!(iss >> type >> x >> y >> side)) {
         return false;
     }
-
     Brick* new_brick = nullptr;
     switch (type) {
         case RAINBOW: {
@@ -190,14 +189,11 @@ bool Game::verif_brick(istringstream& iss) {
             cout << message::invalid_brick_type(type);
             return false;
     }
-
     if (!new_brick->valid_brick()){
         delete new_brick;
         return false;
     }
-
     for (size_t i = 0; i <bricks.size(); ++i) {
-
         if (squares_intersect(new_brick->get_form(),
                                 bricks[i]->get_form(), false)) {
             cout << message::collision_bricks(i, nb_bricks_read);
@@ -205,17 +201,14 @@ bool Game::verif_brick(istringstream& iss) {
             return false;
         }
     }           
-
     if (circle_square_intersect(paddle.get_circle(),
                                     new_brick->get_form())) {
         cout << message::collision_paddle_brick(nb_bricks_read);
         delete new_brick;
         return false;
     }
-    
     bricks.push_back(new_brick);
     nb_bricks_read++; //incrémentation du nombre de briques lues
-
     if (nb_bricks_read == nb_bricks) {
         current_state = EXPECT_NB_BALLS;
     }
