@@ -4,8 +4,6 @@
 #include "tools.h"
 #include "constante.h"
 
-using namespace std;
-
 class Brick {
 protected :
     Square form;
@@ -13,6 +11,8 @@ public :
     Square get_form() const;
     bool valid_brick() const;
     Brick(double x, double y, double side) : form({{x,y}, side}) {}
+    virtual ~Brick() = default; // pour éviter les problèmes de memory leak 
+                                // avec les pointeurs de type Brick* dans Game
 };
 
 
