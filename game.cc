@@ -22,6 +22,10 @@ Game :: Game() :
 {    
 }
 
+Game :: ~Game() {
+    reset();
+}
+
 bool Game::decode_line(const string& line) {
     istringstream iss(line);
 
@@ -167,14 +171,17 @@ bool Game::verif_nb_bricks(istringstream& iss) {
 bool Game::verif_brick(istringstream& iss) {
     int type;
     double x, y, side;
-    if (!(iss >> type >> x >> y >> side)) {
-        return false;
-    }
+    if (!(iss >> type >> x >> y >> side)) {return false;}
+
     Brick* new_brick = nullptr;
     switch (type) {
         case RAINBOW: {
             int hit_points;
             if (!(iss >> hit_points)) return false;
+            if (hit_points < 1 || hit_points > 7) {
+                cout << message::invalid_hit_points(hit_points);
+                return false;
+            }
             new_brick = new Rainbow_Brick(x, y, side, hit_points);
             break;
         }
