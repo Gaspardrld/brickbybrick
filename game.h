@@ -7,6 +7,7 @@
 #include "message.h"
 #include <vector>
 #include <string>
+#include <sstream>
 
 
 class Game {
@@ -22,10 +23,19 @@ class Game {
             FINISH,
         };
         bool decode_line(const std::string& line);
-        double total_score;
+        bool verif_score(std::istringstream& iss);
+        bool verif_lives(std::istringstream& iss);
+        bool verif_paddle(std::istringstream& iss);
+        bool verif_nb_bricks(std::istringstream& iss);
+        bool verif_brick(std::istringstream& iss);
+        bool verif_nb_balls(std::istringstream& iss);
+        bool verif_balls(std::istringstream& iss);
+
+        int total_score;
         int nb_lives;
         int nb_bricks;
         int nb_balls;
+
         Paddle paddle;        
         std::vector<Ball> balls;     
         std::vector<Brick*> bricks;//polymorphisme pour éviter les problèmes de slicing
@@ -37,6 +47,8 @@ class Game {
 
     public:
         Game();
+        ~Game(); // pour éviter les problèmes de memory leak avec 
+                // les pointeurs de type Brick* dans Game
         void reset();
         bool read(const char* file_name);
 };
