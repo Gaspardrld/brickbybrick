@@ -45,6 +45,9 @@ My_window::My_window(string file_name)
     set_infos();
     set_drawing();
     // TODO: set the game
+    if (file_name.empty() == false) {
+        game.read(file_name.c_str());
+    }
 }
 void My_window::set_commands()
 {
