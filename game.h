@@ -51,6 +51,10 @@ class Game {
                 // les pointeurs de type Brick* dans Game
         void reset();
         bool read(const char* file_name);
+        int get_score() const;
+        int get_nb_lives() const;
+        int get_nb_bricks() const;
+        int get_nb_balls() const;
 };
 
 #endif

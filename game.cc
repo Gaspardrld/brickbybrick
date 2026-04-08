@@ -112,6 +112,22 @@ bool Game :: read(const char* file_name) {
     return true;
 }
 
+int Game :: get_score() const {
+    return total_score;
+}
+
+int Game :: get_nb_lives() const {
+    return nb_lives;
+}
+
+int Game :: get_nb_bricks() const {
+    return nb_bricks;
+}
+
+int Game :: get_nb_balls() const {
+    return nb_balls;
+}
+
 
 bool Game :: verif_score(istringstream& iss) {
     if (!(iss >> total_score)) { 
