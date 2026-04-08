@@ -2,7 +2,7 @@
 #define BRICK_H 
 
 #include "tools.h"
-#include "constante.h"
+#include "constants.h"
 
 class Brick {
 protected :
