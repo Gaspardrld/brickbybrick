@@ -1,31 +1,33 @@
-CXX      = g++
-CXXFLAGS = -std=c++17 -Wall -Wextra -g
-TARGET   = project
+OUT      := project
+CXX      := g++
+CXXFLAGS := -Wall -std=c++17
+PKGS     := gtkmm-4.0
+LINKING  := $(shell pkg-config --cflags $(PKGS))
+LDLIBS   := $(shell pkg-config --libs $(PKGS))
 
-SRC  = project.cc game.cc brick.cc ball.cc paddle.cc message.cc tools.cc
+BUILD_DIR := build
 
-# Pour le rendu 2/3 :
-#SRC += gui.cc graphic.cc
-#CXXFLAGS += $(shell pkg-config --cflags gtkmm-3.0)
-#LDFLAGS   = $(shell pkg-config --libs   gtkmm-3.0)
+CXXFILES := project.cc gui.cc graphic.cc game.cc brick.cc ball.cc paddle.cc message.cc tools.cc
+OFILES   := $(addprefix $(BUILD_DIR)/, $(CXXFILES:.cc=.o))
 
-all: $(SRC:.cc=.o)
-	$(CXX) $(CXXFLAGS) -o $(TARGET) $^ $(LDFLAGS)
+.PHONY: all clean tests
 
-%.o: %.cc
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+all: $(OUT)
 
-project.o : project.cc  game.h
-game.o  : game.cc     game.h brick.h ball.h paddle.h message.h tools.h constante.h
-brick.o  : brick.cc    brick.h tools.h constante.h message.h
-ball.o  : ball.cc     ball.h tools.h constante.h message.h
-paddle.o : paddle.cc   paddle.h tools.h constante.h message.h
-message.o : message.cc  message.h 
-tools.o : tools.cc    tools.h
-#gui.o : gui.cc      game.h graphic.h
-#graphic.o : graphic.cc  graphic.h tools.h
+$(BUILD_DIR)/%.o: %.cc
+	@mkdir -p $(dir $@)
+	@echo "Compiling $<..."
+	@$(CXX) $(CXXFLAGS) $(LINKING) -c $< -o $@
+
+$(OUT): $(OFILES)
+	@$(CXX) $(CXXFLAGS) $(LINKING) $^ -o $@ $(LDLIBS)
 
 clean:
-	rm -f *.o $(TARGET)
+	@echo "Cleaning project..."
+	@rm -rf $(BUILD_DIR) $(OUT)
 
-.PHONY: all clean
+tests: $(OUT)
+	@for test in $$(ls tests); do \
+		echo "Running $$test..."; \
+		./$(OUT) tests/$$test; \
+	done
