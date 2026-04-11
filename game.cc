@@ -76,10 +76,6 @@ void Game :: reset() {
     nb_bricks_read = 0;
     nb_balls_read = 0;
 
-    for (auto brick : bricks) { 
-        delete brick;
-    }
-
     bricks.clear();
     balls.clear();   
 }
@@ -128,6 +124,17 @@ int Game :: get_nb_balls() const {
     return nb_balls;
 }
 
+const std::vector<std::unique_ptr<Brick>>& Game::get_bricks() const {
+    return bricks;
+}
+
+const std::vector<Ball>& Game::get_balls() const {
+    return balls;
+}
+
+const Paddle& Game::get_paddle() const {
+    return paddle;
+}
 
 bool Game :: verif_score(istringstream& iss) {
     if (!(iss >> total_score)) { 
@@ -189,7 +196,7 @@ bool Game::verif_brick(istringstream& iss) {
     double x, y, side;
     if (!(iss >> type >> x >> y >> side)) {return false;}
 
-    Brick* new_brick = nullptr;
+    std::unique_ptr<Brick> new_brick;
     switch (type) {
         case RAINBOW: {
             int hit_points;
@@ -198,38 +205,35 @@ bool Game::verif_brick(istringstream& iss) {
                 cout << message::invalid_hit_points(hit_points);
                 return false;
             }
-            new_brick = new Rainbow_Brick(x, y, side, hit_points);
+            new_brick = std::make_unique<Rainbow_Brick>(x, y, side, hit_points);
             break;
         }
         case BALL_BRICK:
-            new_brick = new Ball_Brick(x, y, side);
+            new_brick = std::make_unique<Ball_Brick>(x, y, side);
             break;
         case SPLIT_BRICK:
-            new_brick = new Split_Brick(x, y, side);
+            new_brick = std::make_unique<Split_Brick>(x, y, side);
             break;
         default:
             cout << message::invalid_brick_type(type);
             return false;
     }
     if (!new_brick->valid_brick()){
-        delete new_brick;
         return false;
     }
     for (size_t i = 0; i <bricks.size(); ++i) {
         if (squares_intersect(new_brick->get_form(),
                                 bricks[i]->get_form(), false)) {
             cout << message::collision_bricks(i, nb_bricks_read);
-            delete new_brick;
             return false;
         }
     }           
     if (circle_square_intersect(paddle.get_circle(),
                                     new_brick->get_form())) {
         cout << message::collision_paddle_brick(nb_bricks_read);
-        delete new_brick;
         return false;
     }
-    bricks.push_back(new_brick);
+    bricks.push_back(std::move(new_brick));
     nb_bricks_read++; //incrémentation du nombre de briques lues
     if (nb_bricks_read == nb_bricks) {
         current_state = EXPECT_NB_BALLS;

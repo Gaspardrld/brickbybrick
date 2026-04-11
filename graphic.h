@@ -14,4 +14,7 @@ enum Color
     GREY,
     WHITE,
 };
+
+void set_color(Color color);
+
 #endif

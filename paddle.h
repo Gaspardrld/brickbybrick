@@ -3,6 +3,7 @@
 
 #include "tools.h"
 #include "constants.h"
+#include "graphic_gui.h"
 
 
 class Paddle {
@@ -11,6 +12,7 @@ private :
 public :
     Paddle() = default; 
     Paddle(double x, double y, double radius) : form({{x,y}, radius}) {}
+    void draw(const Cairo::RefPtr<Cairo::Context>& cr) const;
     Circle get_circle() const;
     bool validate_paddle() const;
 };

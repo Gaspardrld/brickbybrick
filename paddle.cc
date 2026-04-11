@@ -22,3 +22,10 @@ bool Paddle::validate_paddle() const {
     }
     return true;
 }
+
+void Paddle::draw(const Cairo::RefPtr<Cairo::Context>& cr) const {
+    set_color(BLACK);
+    cr->arc(form.center.x, form.center.y, form.radius, 0, 2 * M_PI);
+    cr->fill_preserve();
+    cr->stroke();
+}

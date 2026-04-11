@@ -35,4 +35,12 @@ Point Ball::get_delta() const {
     return delta;
 }
 
+void Ball::draw(const Cairo::RefPtr<Cairo::Context> &ptrc) const {
+    set_color(BLACK);
+    ptrc->arc(form.center.x, 
+        form.center.y, 
+        form.radius, 0, 2 * M_PI);
+    ptrc->fill_preserve();
+ptrc->stroke();
+}
  

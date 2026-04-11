@@ -3,6 +3,7 @@
 #include "constants.h"
 #include "graphic_gui.h"
 #include "gui.h"
+#include "graphic.h"
 
 using namespace std;
 
@@ -222,6 +223,8 @@ bool My_window::loop()
     if (loop_activated)
     {
         // TODO: update the game and the interface
+        update_infos();
+        drawing.queue_draw();
         return true;
     }
     return false;
@@ -245,10 +248,10 @@ void My_window::set_infos()
 void My_window::update_infos()
 // TODO: update the different counters
 {
-    for (auto &value : info_value)
-    {
-        value.set_text("0");
-    }
+    info_value[0].set_text(to_string(game.get_score()));
+    info_value[1].set_text(to_string(game.get_nb_lives()));
+    info_value[2].set_text(to_string(game.get_nb_bricks()));
+    info_value[3].set_text(to_string(game.get_nb_balls()));
 }
 
 void My_window::set_drawing()
@@ -264,7 +267,21 @@ void My_window::on_draw(const Cairo::RefPtr<Cairo::Context> &cr, int width, int 
     double side(min(width, height));
     cr->translate((width - side) / 2, (height + side) / 2);
     cr->scale(side / (arena_size), -side / (arena_size));
+
     // TODO: draw the game
+    set_color(WHITE);
+    cr->rectangle(0, 0, 100, 100);
+    cr->fill();
+    
+    for (auto &ball : game.get_balls()) {
+        ball.draw(cr);
+    }
+
+    game.get_paddle().draw(cr);
+
+    for (auto &brick : game.get_bricks()) {
+        brick->draw(cr);
+    }
 }
 
 void My_window::set_mouse_controller()
@@ -287,5 +304,9 @@ void My_window::on_drawing_left_click(int n_press, double x, double y)
 }
 void My_window::on_drawing_move(double x, double y)
 {
+    double width = drawing.get_width();
+    double height = drawing.get_height();
+    double side(min(width, height));
+    double x_game = x / width * arena_size;
     cout << __func__ << endl; // TODO
 }
