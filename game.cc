@@ -81,6 +81,7 @@ void Game :: reset() {
 }
 
 bool Game :: read(const char* file_name) {
+    last_file = file_name;
     reset(); 
     ifstream file(file_name);
     if (file.fail()) {
@@ -122,6 +123,16 @@ int Game :: get_nb_bricks() const {
 
 int Game :: get_nb_balls() const {
     return nb_balls;
+}
+
+void Game :: step() {
+    for ( auto& ball : balls){
+        ball.move();
+    }
+}
+
+bool Game :: restart() {
+    return read(last_file.c_str());
 }
 
 const std::vector<std::unique_ptr<Brick>>& Game::get_bricks() const {
