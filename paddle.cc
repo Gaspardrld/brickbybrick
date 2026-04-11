@@ -25,8 +25,9 @@ bool Paddle::validate_paddle() const {
 
 void Paddle::draw(const Cairo::RefPtr<Cairo::Context>& cr) const {
     set_color(BLACK);
-    cr->arc(form.center.x, form.center.y, form.radius, 0, 2 * M_PI);
-    cr->fill_preserve();
+    double theta = acos(-form.center.y / form.radius);
+    cr->arc(form.center.x, form.center.y, form.radius, theta, M_PI-theta);
+    cr->set_line_width(1);
     cr->stroke();
 }
 
