@@ -29,3 +29,7 @@ void Paddle::draw(const Cairo::RefPtr<Cairo::Context>& cr) const {
     cr->fill_preserve();
     cr->stroke();
 }
+
+void Paddle::move(double x) {
+    form.center.x = x;
+}

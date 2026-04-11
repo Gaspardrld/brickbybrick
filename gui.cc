@@ -307,6 +307,9 @@ void My_window::on_drawing_move(double x, double y)
     double width = drawing.get_width();
     double height = drawing.get_height();
     double side(min(width, height));
-    double x_game = x / width * arena_size;
-    cout << __func__ << endl; // TODO
+    double x_game = (x - (width - side) / 2) / side * arena_size;
+    x_game = max(0.0, min((double)arena_size, x_game)); //au cas où la souris 
+                                                        //sort du dessin
+    game.move_paddle(x_game);
+    drawing.queue_draw();
 }
