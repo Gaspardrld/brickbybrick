@@ -91,7 +91,9 @@ void My_window::save_clicked()
 }
 void My_window::restart_clicked()
 {
-    cout << __func__ << endl; // TODO: reset the game from the last read file
+    game.restart();
+    update_infos();
+    drawing.queue_draw();  // TODO: reset the game from the last read file
 }
 void My_window::start_clicked()
 {
@@ -122,7 +124,9 @@ void My_window::start_clicked()
 }
 void My_window::step_clicked()
 {
-    cout << __func__ << endl; // TODO: make a single update
+    game.step();
+    update_infos();
+    drawing.queue_draw();   // TODO: make a single update
 }
 void My_window::set_key_controller()
 {

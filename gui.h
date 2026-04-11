@@ -22,6 +22,7 @@ private:
     std::array<Gtk::Label, 4> info_text, info_value;
     Gtk::DrawingArea drawing;
     Game game;
+    std::string last_file;
 
     void set_commands();
 

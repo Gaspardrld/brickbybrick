@@ -44,3 +44,7 @@ void Ball::draw(const Cairo::RefPtr<Cairo::Context> &ptrc) const {
 ptrc->stroke();
 }
  
+void Ball :: move(){
+    form.center.x += delta.x;
+    form.center.y += delta.y;
+}
