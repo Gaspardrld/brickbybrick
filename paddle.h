@@ -15,6 +15,7 @@ public :
     void draw(const Cairo::RefPtr<Cairo::Context>& cr) const;
     Circle get_circle() const;
     bool validate_paddle() const;
+    void move(double x);
 };
 
 #endif
