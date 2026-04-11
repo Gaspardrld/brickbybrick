@@ -109,6 +109,39 @@ bool Game :: read(const char* file_name) {
     return true;
 }
 
+bool Game :: save(const std::string&) {
+    ofstream file(file_name);
+    if (!file) {
+        return false;
+    }
+    file << total_score << "\n";
+    file << nb_lives << "\n";
+    file << paddle.get_circle().center.x << " "<< paddle.get_circle().center.y << " "
+         << paddle.get_circle().radius << "\n";
+    file << bricks.size() << "\n";
+    for (const auto& brick : bricks){
+        if (brick->get_type() == 0){
+            file << brick->get_type() << " "<< brick->get_form().center.x 
+                 << " "<< brick->get_form().center.y << " "<< brick->get_form().side 
+                 << " "
+                 << static_cast<const Rainbow_Brick*>(brick.get())->get_hit_points() 
+                 << "\n";
+        }
+        else {
+            file << brick->get_type() << " "<< brick->get_form().center.x 
+             << " "<< brick->get_form().center.y << " "<< brick->get_form().side 
+             << "\n";
+        }
+    }
+    file << balls.size() << "\n";
+    for (const auto& ball : balls){
+        file << ball.get_circle().center.x << " " << ball.get_circle().center.y << " "
+             << ball.get_circle().radius << " " << ball.get_delta().x << " "
+             << ball.get_delta().y << "\n";
+    }
+    return true;
+}
+
 int Game :: get_score() const {
     return total_score;
 }
