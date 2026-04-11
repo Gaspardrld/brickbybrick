@@ -8,6 +8,7 @@
 #include <vector>
 #include <string>
 #include <sstream>
+#include <memory>
 
 
 class Game {
@@ -38,7 +39,8 @@ class Game {
 
         Paddle paddle;        
         std::vector<Ball> balls;     
-        std::vector<Brick*> bricks;//polymorphisme pour éviter les problèmes de slicing
+        std::vector<std::unique_ptr<Brick>> bricks;
+        //polymorphisme pour éviter les problèmes de slicing
 
         int nb_bricks_read;
         int nb_balls_read;
@@ -55,6 +57,9 @@ class Game {
         int get_nb_lives() const;
         int get_nb_bricks() const;
         int get_nb_balls() const;
+        const std::vector<std::unique_ptr<Brick>>& get_bricks() const;
+        const Paddle& get_paddle() const;
+        const std::vector<Ball>& get_balls() const;
 };
 
 #endif

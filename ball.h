@@ -3,6 +3,7 @@
 
 #include "tools.h"
 #include "constants.h"
+#include "graphic_gui.h"
 
 class Ball {
 private :
@@ -17,9 +18,12 @@ public :
 
     Circle get_circle() const;
     Point  get_delta()  const;
+    
 
     Ball(double x, double y, double radius, double d_x, double d_y) 
     : form({{x,y}, radius}), delta({d_x, d_y}) {}
+
+    void draw(const Cairo::RefPtr<Cairo::Context> &ptrc) const;
 };
 
 #endif
