@@ -272,7 +272,8 @@ void My_window::on_draw(const Cairo::RefPtr<Cairo::Context> &cr, int width, int 
     set_color(WHITE);
     cr->rectangle(0, 0, 100, 100);
     cr->fill();
-    
+
+        
     for (auto &ball : game.get_balls()) {
         ball.draw(cr);
     }
@@ -282,6 +283,10 @@ void My_window::on_draw(const Cairo::RefPtr<Cairo::Context> &cr, int width, int 
     for (auto &brick : game.get_bricks()) {
         brick->draw(cr);
     }
+
+    set_color(GREY);
+    cr->rectangle(0, 0, arena_size, arena_size);
+    cr->stroke();
 }
 
 void My_window::set_mouse_controller()
@@ -300,7 +305,11 @@ void My_window::set_mouse_controller()
 }
 void My_window::on_drawing_left_click(int n_press, double x, double y)
 {
-    cout << __func__ << endl; // TODO
+    if (n_press == 1 && game.get_nb_lives() > 0) {
+        game.new_ball();
+        update_infos();
+    }
+    drawing.queue_draw(); // TODO
 }
 void My_window::on_drawing_move(double x, double y)
 {

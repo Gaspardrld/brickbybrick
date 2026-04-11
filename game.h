@@ -60,6 +60,8 @@ class Game {
         const std::vector<std::unique_ptr<Brick>>& get_bricks() const;
         const Paddle& get_paddle() const;
         const std::vector<Ball>& get_balls() const;
+
+        void new_ball();
         void move_paddle(double x) { paddle.move(x); }
 };
 

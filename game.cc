@@ -136,6 +136,18 @@ const Paddle& Game::get_paddle() const {
     return paddle;
 }
 
+void Game::new_ball(){
+    double pos_x = get_paddle().get_circle().center.x;
+    double pos_y = get_paddle().get_circle().center.y 
+            + get_paddle().get_circle().radius 
+            + new_ball_radius
+            + 1
+            + epsil_zero; 
+            //positionné juste au dessus de la raquette
+    Ball new_b(pos_x, pos_y, new_ball_radius, 0, new_ball_delta_norm);
+    balls.push_back(new_b);
+}
+
 bool Game :: verif_score(istringstream& iss) {
     if (!(iss >> total_score)) { 
         return false;
