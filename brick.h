@@ -16,6 +16,7 @@ public :
     //pour forcer les classes dérivées à implémenter leur propre méthode de dessin
     virtual ~Brick() = default; // pour éviter les problèmes de memory leak 
                                 // avec les pointeurs de type Brick* dans Game
+    virtual int get_type() const = 0;
 };
 
 
@@ -27,6 +28,7 @@ public :
     : Brick(x,y,side), hit_points(hp) {}
     int get_hit_points() const;
     void draw(const Cairo::RefPtr<Cairo::Context>& cr) const;
+    int get_type() const override;
 };
 
 
@@ -35,6 +37,7 @@ public :
     Ball_Brick(double x, double y, double side)
     : Brick(x,y,side) {}
     void draw(const Cairo::RefPtr<Cairo::Context>& cr) const;
+    int get_type() const override;
 };
 
 class Split_Brick : public Brick {
@@ -42,6 +45,7 @@ public :
     Split_Brick(double x, double y, double side)
     : Brick(x,y,side) {}
     void draw(const Cairo::RefPtr<Cairo::Context>& cr) const;
+    int get_type() const override;
 };
 
 #endif

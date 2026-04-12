@@ -46,6 +46,8 @@ class Game {
         int nb_balls_read;
         State current_state;
 
+        std::string last_file;
+
 
     public:
         Game();
@@ -53,10 +55,14 @@ class Game {
                 // les pointeurs de type Brick* dans Game
         void reset();
         bool read(const char* file_name);
+        bool save(const std::string&);
         int get_score() const;
         int get_nb_lives() const;
         int get_nb_bricks() const;
         int get_nb_balls() const;
+        void step();
+        bool restart();
+
         const std::vector<std::unique_ptr<Brick>>& get_bricks() const;
         const Paddle& get_paddle() const;
         const std::vector<Ball>& get_balls() const;

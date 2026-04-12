@@ -24,6 +24,7 @@ public :
     : form({{x,y}, radius}), delta({d_x, d_y}) {}
 
     void draw(const Cairo::RefPtr<Cairo::Context> &ptrc) const;
+    void move();
 };
 
 #endif
