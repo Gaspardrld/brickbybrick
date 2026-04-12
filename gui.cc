@@ -45,7 +45,6 @@ My_window::My_window(string file_name)
     set_mouse_controller();
     set_infos();
     set_drawing();
-    // TODO: set the game
     if (file_name.empty() == false) {
         if (!game.read(file_name.c_str())) {
             file_error = true;
@@ -95,7 +94,9 @@ void My_window::save_clicked()
 }
 void My_window::restart_clicked()
 {
-    cout << __func__ << endl; // TODO: reset the game from the last read file
+    game.restart();
+    update_infos();
+    drawing.queue_draw();
 }
 void My_window::start_clicked()
 {
@@ -126,7 +127,9 @@ void My_window::start_clicked()
 }
 void My_window::step_clicked()
 {
-    cout << __func__ << endl; // TODO: make a single update
+    game.step();
+    update_infos();
+    drawing.queue_draw();
 }
 void My_window::set_key_controller()
 {
@@ -140,13 +143,13 @@ bool My_window::key_pressed(guint keyval, guint keycode, Gdk::ModifierType state
     switch (keyval)
     {
     case '1':
-        // TODO: make a single update
+        step_clicked();
         return true;
     case 's':
-        // TODO: pause or unpause the game
+        start_clicked();
         return true;
     case 'r':
-        // TODO: reset the game from the last read file
+        restart_clicked();
         return true;
     default:
         break;
@@ -206,14 +209,16 @@ void My_window::dialog_response(int response, Gtk::FileChooserDialog *dialog)
     case OPEN_FILE:
         if (file_name != "")
         {
-            cout << "open file " << file_name << endl; // TODO: set game from a file
+            game.read(file_name.string().c_str());
+            update_infos();
+            drawing.queue_draw();
             dialog->hide();
         }
         break;
     case SAVE_FILE:
         if (file_name != "")
         {
-            cout << "save file " << file_name << endl; // TODO: save the game
+            game.save(file_name.string());
             dialog->hide();
         }
         break;
@@ -226,7 +231,9 @@ bool My_window::loop()
 {
     if (loop_activated)
     {
-        // TODO: update the game and the interface
+        game.step();
+        update_infos();
+        drawing.queue_draw();
         return true;
     }
     return false;
@@ -248,7 +255,6 @@ void My_window::set_infos()
 }
 
 void My_window::update_infos()
-// TODO: update the different counters
 {
     info_value[0].set_text(to_string(game.get_score()));
     info_value[1].set_text(to_string(game.get_nb_lives()));

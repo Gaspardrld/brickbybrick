@@ -82,3 +82,7 @@ void Split_Brick::draw(const Cairo::RefPtr<Cairo::Context>& cr) const {
         cr->stroke();
     }
 }
+
+int Rainbow_Brick :: get_type() const { return 0; }
+int Ball_Brick :: get_type() const { return 1; }
+int Split_Brick :: get_type() const { return 2; }

@@ -23,6 +23,7 @@ private:
     Gtk::DrawingArea drawing;
     Game game;
     bool file_error= false;
+    std::string last_file;
 
     void set_commands();
 
