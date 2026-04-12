@@ -77,7 +77,7 @@ void Game :: reset() {
     nb_balls_read = 0;
 
     bricks.clear();
-    balls.clear();   
+    balls.clear(); 
 }
 
 bool Game :: read(const char* file_name) {
@@ -117,11 +117,11 @@ int Game :: get_nb_lives() const {
 }
 
 int Game :: get_nb_bricks() const {
-    return nb_bricks;
+    return bricks.size();
 }
 
 int Game :: get_nb_balls() const {
-    return nb_balls;
+    return balls.size();
 }
 
 const std::vector<std::unique_ptr<Brick>>& Game::get_bricks() const {

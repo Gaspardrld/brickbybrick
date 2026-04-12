@@ -47,7 +47,11 @@ My_window::My_window(string file_name)
     set_drawing();
     // TODO: set the game
     if (file_name.empty() == false) {
-        game.read(file_name.c_str());
+        if (!game.read(file_name.c_str())) {
+            file_error = true;
+        }
+        update_infos();
+        drawing.queue_draw();
     }
 }
 void My_window::set_commands()
@@ -223,8 +227,6 @@ bool My_window::loop()
     if (loop_activated)
     {
         // TODO: update the game and the interface
-        update_infos();
-        drawing.queue_draw();
         return true;
     }
     return false;
@@ -270,10 +272,15 @@ void My_window::on_draw(const Cairo::RefPtr<Cairo::Context> &cr, int width, int 
 
     // TODO: draw the game
     set_color(WHITE);
+    cr->paint();
+    
+    if (file_error) {
+        return;
+    }
+
     cr->rectangle(0, 0, 100, 100);
     cr->fill();
 
-        
     for (auto &ball : game.get_balls()) {
         ball.draw(cr);
     }
@@ -305,7 +312,7 @@ void My_window::set_mouse_controller()
 }
 void My_window::on_drawing_left_click(int n_press, double x, double y)
 {
-    if (n_press == 1 && game.get_nb_lives() > 0) {
+    if (n_press == 1 && game.get_nb_lives() > 0 and game.get_nb_balls() == 0) {
         game.new_ball();
         update_infos();
     }
@@ -313,12 +320,21 @@ void My_window::on_drawing_left_click(int n_press, double x, double y)
 }
 void My_window::on_drawing_move(double x, double y)
 {
+
+    for (auto &brick : game.get_bricks()) {
+        if (circle_square_intersect(game.get_paddle().get_circle(),
+                                    brick->get_form())) {
+            return; //si la raquette touche une brique, on ne la déplace pas
+        }
+    }
     double width = drawing.get_width();
     double height = drawing.get_height();
     double side(min(width, height));
     double x_game = (x - (width - side) / 2) / side * arena_size;
-    x_game = max(0.0, min((double)arena_size, x_game)); //au cas où la souris 
-                                                        //sort du dessin
+
+    //au cas où la souris sort du dessin
+    double r = game.get_paddle().get_circle().radius;
+    x_game = max(r, min((double)arena_size - r, x_game));
     game.move_paddle(x_game);
     drawing.queue_draw();
 }
