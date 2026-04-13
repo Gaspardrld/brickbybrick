@@ -109,7 +109,7 @@ bool Game :: read(const char* file_name) {
     return true;
 }
 
-bool Game :: save(const std::string&) {
+bool Game :: save(const std::string& file_name ) {
     ofstream file(file_name);
     if (!file) {
         return false;
