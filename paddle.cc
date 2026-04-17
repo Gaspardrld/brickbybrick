@@ -2,7 +2,7 @@
 #include "paddle.h"
 #include "message.h"
 
-Circle Paddle::get_circle() const {
+const Circle Paddle::get_circle() const {
     return form;
 }
 
@@ -23,19 +23,11 @@ bool Paddle::validate_paddle() const {
     return true;
 }
 
-void Paddle::draw(const Cairo::RefPtr<Cairo::Context>& cr) const {
-    set_color(BLACK);
-    double value = -form.center.y / form.radius;
-
-    if (value > 1.0) value = 1.0;
-    if (value < -1.0) value = -1.0;
-
-    double theta = asin(value);
-    cr->arc(form.center.x, form.center.y, form.radius, theta, M_PI-theta);
-    cr->set_line_width(1);
-    cr->stroke();
+void Paddle::draw() const {
+    form.draw(BLACK, false);
 }
 
 void Paddle::move(double x) {
     form.center.x = x;
 }
+

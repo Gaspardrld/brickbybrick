@@ -277,25 +277,16 @@ void My_window::on_draw(const Cairo::RefPtr<Cairo::Context> &cr, int width, int 
     cr->scale(side / (arena_size), -side / (arena_size));
 
     // TODO: draw the game
-    set_color(WHITE);
-    cr->paint();
-    
     if (file_error) {
         return;
     }
-
-    cr->rectangle(0, 0, 100, 100);
-    cr->fill();
-
-    for (auto &ball : game.get_balls()) {
-        ball.draw(cr);
+    for (const auto& brick : game.get_bricks()) {
+        brick->draw();
     }
-
-    game.get_paddle().draw(cr);
-
-    for (auto &brick : game.get_bricks()) {
-        brick->draw(cr);
+    for (const auto& ball : game.get_balls()) {
+        ball.draw();
     }
+    game.get_paddle().draw();
 
     set_color(GREY);
     cr->rectangle(0, 0, arena_size, arena_size);
@@ -316,6 +307,8 @@ void My_window::set_mouse_controller()
     drawing.add_controller(left_click);
     drawing.add_controller(move);
 }
+
+
 void My_window::on_drawing_left_click(int n_press, double x, double y)
 {
     if (n_press == 1 && game.get_nb_lives() > 0 and game.get_nb_balls() == 0) {
@@ -324,23 +317,43 @@ void My_window::on_drawing_left_click(int n_press, double x, double y)
     }
     drawing.queue_draw(); // TODO
 }
+
+
 void My_window::on_drawing_move(double x, double y)
 {
+    double side = min(drawing.get_width(), drawing.get_height());
+    double offset = (drawing.get_width() - side) / 2.0;
+    double x_game = (x - offset) * arena_size / side;
 
+    double current_x = game.get_paddle().get_circle().center.x;
+    double r = game.get_paddle().get_circle().radius;
+    double value = -game.get_paddle().get_circle().center.y / r;
+    value = max(-1.0, min(1.0, value));
+    double half_width = r * cos(asin(value));
+
+    // clamper aux bords
+    x_game = max(half_width, min(arena_size - half_width, x_game));
+
+    // limiter la vitesse
+    double delta = x_game - current_x;
+    if (abs(delta) > delta_norm_max) {
+        delta = (delta > 0) ? delta_norm_max : -delta_norm_max;
+    }
+    double new_x = current_x + delta;
+
+    if (x <= 0 || x >= drawing.get_width()) {
+        x <= 0 ? on_drawing_move(0, y)  
+            : on_drawing_move(drawing.get_width(), y);
+    }
+    game.move_paddle(new_x);
+
+    // collision brique
     for (auto &brick : game.get_bricks()) {
         if (circle_square_intersect(game.get_paddle().get_circle(),
                                     brick->get_form())) {
-            return; //si la raquette touche une brique, on ne la déplace pas
+            game.move_paddle(current_x);
+            return;
         }
     }
-    double width = drawing.get_width();
-    double height = drawing.get_height();
-    double side(min(width, height));
-    double x_game = (x - (width - side) / 2) / side * arena_size;
-
-    //au cas où la souris sort du dessin
-    double r = game.get_paddle().get_circle().radius;
-    x_game = max(r, min((double)arena_size - r, x_game));
-    game.move_paddle(x_game);
     drawing.queue_draw();
 }

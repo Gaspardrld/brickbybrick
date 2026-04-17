@@ -19,7 +19,23 @@ double distance(Point a, Point b) {
     return norm({a.x - b.x, a.y - b.y});
 }
 
+void Circle::draw(Color color, bool filled) const {
+    set_color(color);
+    draw_circle(center.x, center.y, radius, filled);
+}
 
+void Square::draw(Color color) const {
+    set_color(color);
+    draw_rectangle(center.x - side/2, center.y - side/2, side, side);
+}
+
+void draw_cross(double x, double y, double size, Color c) {
+    set_color(c);  
+    // ligne horizontale
+    draw_line(x - size, y, x + size, y);
+    // Ligne verticale
+    draw_line(x, y - size, x, y + size);
+}
 
 Point closest_point_on_square(Point p, const Square& s) {
     double half = s.side/2.0;

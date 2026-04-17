@@ -1,5 +1,6 @@
 #include "graphic.h"
 #include "graphic_gui.h"
+#include "constants.h"
 
 using namespace std;
 
@@ -10,6 +11,7 @@ void graphic_set_context(const Cairo::RefPtr<Cairo::Context> &cr)
 {
     ptcr = &cr;
 }
+
 // local functions
 void set_color(Color color)
 {
@@ -55,4 +57,27 @@ void set_color(Color color)
         break;
     }
     (*ptcr)->set_source_rgb(r, g, b);
+}
+
+void draw_circle(double x, double y, double radius,bool filled) {
+    (*ptcr)->arc(x, y, radius, 0, 2 * M_PI);
+    if (filled) {
+        (*ptcr)->fill();
+    }else {
+        (*ptcr)->stroke();
+    }
+}
+
+void draw_rectangle(double x, double y, double width, double height)
+{
+    (*ptcr)->rectangle(x, y, width, height);
+    (*ptcr)->fill();
+}
+
+void draw_line(double x1, double y1, double x2, double y2)
+{
+    (*ptcr)->set_line_width(split_brick_gap);
+    (*ptcr)->move_to(x1, y1);
+    (*ptcr)->line_to(x2, y2);
+    (*ptcr)->stroke();
 }

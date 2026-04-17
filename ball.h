@@ -1,3 +1,5 @@
+//ball.cc Devilez Antoine version rendu 2
+
 #ifndef BALL_H
 #define BALL_H
 
@@ -16,14 +18,13 @@ private :
 public :
     bool valid_ball() const;
 
-    Circle get_circle() const;
+    const Circle get_circle() const;
     Point  get_delta()  const;
     
-
     Ball(double x, double y, double radius, double d_x, double d_y) 
     : form({{x,y}, radius}), delta({d_x, d_y}) {}
 
-    void draw(const Cairo::RefPtr<Cairo::Context> &ptrc) const;
+    void draw() const;
     void move();
 };
 
