@@ -23,63 +23,70 @@ int Rainbow_Brick::get_hit_points() const {
     return hit_points;
 }
 
-void Ball_Brick::draw(const Cairo::RefPtr<Cairo::Context>& cr) const {
-    set_color(RED);
-    cr->rectangle(form.center.x - form.side/2,
-                  form.center.y - form.side/2,
-                  form.side, form.side);
-    cr->fill_preserve();
-    cr->stroke();
-
-    set_color(BLACK);
-    cr->arc(form.center.x, form.center.y, new_ball_radius, 0, 2 * M_PI);
-    cr->fill();
+void Ball_Brick::draw() const {
+    form.draw(RED);
+    ball_in_brick.draw(BLACK, true);
 }
 
-void Rainbow_Brick::draw(const Cairo::RefPtr<Cairo::Context>& cr) const {
+void Ball_Brick::create_ball_in_brick() {
+    ball_in_brick = {{form.center.x, form.center.y}, new_ball_radius};
+}
+
+void Rainbow_Brick::draw() const {
+    Color color;
     switch (hit_points) {
-        case 1: set_color(RED);    break;
-        case 2: set_color(ORANGE); break;
-        case 3: set_color(YELLOW); break;
-        case 4: set_color(GREEN);  break;
-        case 5: set_color(CYAN);   break;
-        case 6: set_color(BLUE);   break;
-        case 7: set_color(PURPLE); break;
+        case 1: color = RED;    break;
+        case 2: color = ORANGE; break;
+        case 3: color = YELLOW; break;
+        case 4: color = GREEN;  break;
+        case 5: color = CYAN;   break;
+        case 6: color = BLUE;   break;
+        case 7: color = PURPLE; break;
     }
-    cr->rectangle(form.center.x - form.side/2,
-                  form.center.y - form.side/2,
-                  form.side, form.side);
-    cr->fill_preserve();
-    cr->stroke();
+    form.draw(color);
 }
 
-void Split_Brick::draw(const Cairo::RefPtr<Cairo::Context>& cr) const {
-    // carré principal rouge
-    set_color(RED);
-    cr->rectangle(form.center.x - form.side/2,
-                  form.center.y - form.side/2,
-                  form.side, form.side);
-    cr->fill_preserve();
-    cr->stroke();
 
-    // 4 coins oranges
-    double small_side = (form.side - split_brick_gap) / 2;
-    if (small_side < brick_size_min) return;
+void Split_Brick::compute_split_points() {
+    double ratio = static_cast<double>(form.side + split_brick_gap) / 
+                   (brick_size_min + split_brick_gap);
+    split_points = static_cast<int>(std::floor(std::log2(ratio))) + 1;
+    if (split_points < 1) split_points = 1;
+    if (split_points > 4) split_points = 4;
+}
 
-    double offset = split_brick_gap/2 + small_side/2;
-    set_color(ORANGE);
-    
-    double centers[4][2] = {
-        {form.center.x - offset, form.center.y + offset},
-        {form.center.x + offset, form.center.y + offset},
-        {form.center.x - offset, form.center.y - offset},
-        {form.center.x + offset, form.center.y - offset},
-    };
-    
-    for (auto& c : centers) {
-        cr->rectangle(c[0] - small_side/2, c[1] - small_side/2, small_side, small_side);
-        cr->fill_preserve();
-        cr->stroke();
+void Split_Brick :: draw() const {
+    Color color;
+    switch (split_points) {
+        case 4: color = GREEN;  break;
+        case 3: color = YELLOW; break;
+        case 2: color = ORANGE; break;
+        case 1: color = RED;    break;
+    }
+    form.draw(color);
+    if (split_points == 4) {
+       for (int i = 0; i < 4; ++i) {
+                    for (int j = 0; j < 4; ++j) {
+                        double offset_x = (i - 1.5) * (form.side / 4);
+                        double offset_y = (j - 1.5) * (form.side / 4);
+                        draw_cross(form.center.x + offset_x, form.center.y + offset_y,
+                                form.side / 8, YELLOW);
+                    }
+        }
+    }
+    if (split_points >=3) {
+        double cross_size = form.side / 4;
+        draw_cross(form.center.x - form.side/4, form.center.y - form.side/4, 
+                                                                cross_size, ORANGE);
+        draw_cross(form.center.x + form.side/4, form.center.y - form.side/4, 
+                                                                cross_size, ORANGE);
+        draw_cross(form.center.x - form.side/4, form.center.y + form.side/4, 
+                                                                cross_size, ORANGE);
+        draw_cross(form.center.x + form.side/4, form.center.y + form.side/4, 
+                                                                cross_size, ORANGE);
+    }
+    if (split_points >= 2) {
+        draw_cross(form.center.x, form.center.y, form.side/2, RED);
     }
 }
 
