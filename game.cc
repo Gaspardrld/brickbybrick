@@ -81,9 +81,10 @@ void Game :: reset() {
 }
 
 bool Game :: read(const char* file_name) {
+    std::string full_name = std::string("tests/") + file_name;
     last_file = file_name;
     reset(); 
-    ifstream file(file_name);
+    ifstream file(full_name);
     if (file.fail()) {
         return false;
     }
