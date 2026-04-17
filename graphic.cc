@@ -63,8 +63,8 @@ void draw_circle(double x, double y, double radius,bool filled) {
     (*ptcr)->arc(x, y, radius, 0, 2 * M_PI);
     if (filled) {
         (*ptcr)->fill();
-    }else {
-        (*ptcr)->set_line_width(0.7);
+    } else {
+        (*ptcr)->set_line_width(line_width_default);
         (*ptcr)->stroke();
     }
 }
