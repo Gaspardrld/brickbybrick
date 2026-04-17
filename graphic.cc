@@ -64,6 +64,7 @@ void draw_circle(double x, double y, double radius,bool filled) {
     if (filled) {
         (*ptcr)->fill();
     }else {
+        (*ptcr)->set_line_width(0.7);
         (*ptcr)->stroke();
     }
 }

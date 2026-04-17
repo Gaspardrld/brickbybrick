@@ -159,9 +159,33 @@ int Game :: get_nb_balls() const {
 }
 
 void Game :: step() {
-    for ( auto& ball : balls){
+    for (auto& ball : balls){
         ball.move();
     }
+    move_paddle();
+}
+
+void Game :: move_paddle() {
+    double x_previous= paddle.get_circle().center.x;
+    paddle.move();
+
+    // collision brique
+    for (auto &brick : get_bricks()) {
+        if (circle_square_intersect(paddle.get_circle(),
+                                    brick->get_form())) {
+            paddle.get_circle().center.x = x_previous;
+            return;
+        }
+    }
+
+    double r = paddle.get_circle().radius;
+    double value = paddle.get_circle().center.y / r;
+    double half_width = r * cos(asin(value));
+    
+    // clamper aux bords
+    paddle.get_circle().center.x = max(half_width+epsil_zero, 
+                    min(arena_size - half_width-epsil_zero, 
+                        paddle.get_circle().center.x));
 }
 
 bool Game :: restart() {
@@ -180,10 +204,14 @@ const Paddle& Game::get_paddle() const {
     return paddle;
 }
 
+void Game :: set_target_paddle(double x) {
+    paddle.set_target(x);
+}
+
 void Game::new_ball(){
-    double pos_x = get_paddle().get_circle().center.x;
-    double pos_y = get_paddle().get_circle().center.y 
-            + get_paddle().get_circle().radius 
+    double pos_x = paddle.get_circle().center.x;
+    double pos_y = paddle.get_circle().center.y 
+            + paddle.get_circle().radius 
             + new_ball_radius
             + 1
             + epsil_zero; 

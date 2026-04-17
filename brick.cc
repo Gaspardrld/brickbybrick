@@ -46,48 +46,59 @@ void Rainbow_Brick::draw() const {
     form.draw(color);
 }
 
-
-void Split_Brick::compute_split_points() {
-    double ratio = static_cast<double>(form.side + split_brick_gap) / 
-                   (brick_size_min + split_brick_gap);
-    split_points = static_cast<int>(std::floor(std::log2(ratio))) + 1;
-    if (split_points < 1) split_points = 1;
-    if (split_points > 4) split_points = 4;
+void Split_Brick::draw() const {
+    draw(RED);
 }
 
-void Split_Brick :: draw() const {
-    Color color;
-    switch (split_points) {
-        case 4: color = GREEN;  break;
-        case 3: color = YELLOW; break;
-        case 2: color = ORANGE; break;
-        case 1: color = RED;    break;
-    }
+void Split_Brick :: draw(Color color) const {
     form.draw(color);
-    if (split_points == 4) {
-       for (int i = 0; i < 4; ++i) {
-                    for (int j = 0; j < 4; ++j) {
-                        double offset_x = (i - 1.5) * (form.side / 4);
-                        double offset_y = (j - 1.5) * (form.side / 4);
-                        draw_cross(form.center.x + offset_x, form.center.y + offset_y,
-                                form.side / 8, YELLOW);
-                    }
-        }
+        switch(color) {
+        case RED: color= ORANGE; break; 
+        case ORANGE: color= YELLOW; break;
+        case YELLOW: color= GREEN;  break;
+        default: color = color; break;
+    }   
+    for (auto& brick : splitBricks) {
+        brick->draw(color);
     }
-    if (split_points >=3) {
-        double cross_size = form.side / 4;
-        draw_cross(form.center.x - form.side/4, form.center.y - form.side/4, 
-                                                                cross_size, ORANGE);
-        draw_cross(form.center.x + form.side/4, form.center.y - form.side/4, 
-                                                                cross_size, ORANGE);
-        draw_cross(form.center.x - form.side/4, form.center.y + form.side/4, 
-                                                                cross_size, ORANGE);
-        draw_cross(form.center.x + form.side/4, form.center.y + form.side/4, 
-                                                                cross_size, ORANGE);
-    }
-    if (split_points >= 2) {
-        draw_cross(form.center.x, form.center.y, form.side/2, RED);
-    }
+}
+
+Split_Brick::Split_Brick(double x, double y, double side)
+: Brick(x, y, side)
+{
+    double new_side = (side - split_brick_gap) / 2;
+    if (new_side < brick_size_min) return;
+
+    double left = x - side / 2;
+    double top  = y - side / 2;
+
+    // HG
+    splitBricks.push_back(std::make_unique<Split_Brick>(
+        left + new_side / 2,
+        top  + new_side / 2,
+        new_side
+    ));
+
+    // HD
+    splitBricks.push_back(std::make_unique<Split_Brick>(
+        left + new_side + split_brick_gap + new_side / 2,
+        top  + new_side / 2,
+        new_side
+    ));
+
+    // BG
+    splitBricks.push_back(std::make_unique<Split_Brick>(
+        left + new_side / 2,
+        top  + new_side + split_brick_gap + new_side / 2,
+        new_side
+    ));
+
+    // BD
+    splitBricks.push_back(std::make_unique<Split_Brick>(
+        left + new_side + split_brick_gap + new_side / 2,
+        top  + new_side + split_brick_gap + new_side / 2,
+        new_side
+    )); 
 }
 
 int Rainbow_Brick :: get_type() const { return 0; }

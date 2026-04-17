@@ -48,14 +48,11 @@ public :
 
 class Split_Brick : public Brick {
 private :
-    int split_points;
+    std::vector<std::unique_ptr<Split_Brick>> splitBricks; 
 public :
-    void compute_split_points(); 
-    Split_Brick(double x, double y, double side)
-    : Brick(x,y,side) {compute_split_points();}
-    Split_Brick(double x, double y, double side, int sp)
-    : Brick(x,y,side), split_points(sp) {}
+    Split_Brick(double x, double y, double side);
     void draw() const override;
+    void draw(Color color) const;
     int get_type() const override;
 };
 
