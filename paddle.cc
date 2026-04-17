@@ -2,7 +2,7 @@
 #include "paddle.h"
 #include "message.h"
 
-const Circle Paddle::get_circle() const {
+Circle& Paddle::get_circle() {
     return form;
 }
 
@@ -27,7 +27,18 @@ void Paddle::draw() const {
     form.draw(BLACK, false);
 }
 
-void Paddle::move(double x) {
-    form.center.x = x;
+void Paddle::move() {    
+    // limiter la vitesse
+    double delta = target - form.center.x;
+    if (abs(delta) > delta_norm_max) {
+        delta = (delta > 0) ? delta_norm_max : -delta_norm_max;
+    }
+    double new_x = form.center.x + delta;
+
+    form.center.x = new_x;
+}
+
+void Paddle::set_target(double x) {
+    target = x;
 }
 

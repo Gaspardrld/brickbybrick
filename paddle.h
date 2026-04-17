@@ -9,13 +9,15 @@
 class Paddle {
 private :
     Circle form;
+    double target;
 public :
     Paddle() = default; 
     Paddle(double x, double y, double radius) : form({{x,y}, radius}) {}
     void draw() const;
-    const Circle get_circle() const;
+    Circle& get_circle();
     bool validate_paddle() const;
-    void move(double x);
+    void move();
+    void set_target(double x);
 };
 
 #endif
