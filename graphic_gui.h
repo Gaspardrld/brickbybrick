@@ -1,3 +1,7 @@
+// graphic_gui.h
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #ifndef GRAPHIC_GUI_H
 #define GRAPHIC_GUI_H
 

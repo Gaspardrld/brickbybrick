@@ -1,4 +1,6 @@
-//ball.cc Devilez Antoine version rendu 2
+// ball.h
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
 
 #ifndef BALL_H
 #define BALL_H

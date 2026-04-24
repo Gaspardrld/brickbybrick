@@ -1,3 +1,7 @@
+// graphic.cc
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #include "graphic.h"
 #include "graphic_gui.h"
 #include "constants.h"
@@ -59,8 +63,9 @@ void set_color(Color color)
     (*ptcr)->set_source_rgb(r, g, b);
 }
 
-void draw_circle(double x, double y, double radius,bool filled) {
-    (*ptcr)->arc(x, y, radius, 0, 2 * M_PI);
+void draw_circle(double x, double y, double radius,bool filled, 
+                            double angle_start, double angle_end) {
+    (*ptcr)->arc(x, y, radius, angle_start, angle_end);
     if (filled) {
         (*ptcr)->fill();
     } else {

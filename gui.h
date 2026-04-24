@@ -1,3 +1,7 @@
+// gui.h
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #ifndef GUI_H
 #define GUI_H
 

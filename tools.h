@@ -1,3 +1,7 @@
+// tools.h
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #ifndef TOOLS_H
 #define TOOLS_H
 
@@ -16,7 +20,8 @@ struct Point {
 struct Circle {
     Point  center;
     double radius = 0.0;
-    void draw(Color color, bool filled = true) const;
+    void draw(Color color, bool filled = true,double angle_start=0, 
+                                            double angle_end=2 * M_PI) const;
 };
 
 struct Square {
