@@ -1,3 +1,7 @@
+// tools.cc
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #include "tools.h"
 #include <algorithm>  // std::min, std::max
 #include <cmath>      // std::sqrt, std::abs
@@ -19,9 +23,10 @@ double distance(Point a, Point b) {
     return norm({a.x - b.x, a.y - b.y});
 }
 
-void Circle::draw(Color color, bool filled) const {
+void Circle::draw(Color color, bool filled,
+                  double angle_start, double angle_end) const {
     set_color(color);
-    draw_circle(center.x, center.y, radius, filled);
+    draw_circle(center.x, center.y, radius, filled, angle_start, angle_end);
 }
 
 void Square::draw(Color color) const {
@@ -104,8 +109,8 @@ bool circle_in_square(const Circle& c, const Square& arena,
     bool in_x   = c.center.x - c.radius >= arena.center.x - half - tol 
                 and c.center.x + c.radius <= arena.center.x + half + tol;
     bool in_top = c.center.y + c.radius <= arena.center.y + half + tol;
-    bool in_bot = ignore_bottom ? true 
-                                : c.center.y - c.radius >= arena.center.y - half - tol;
+    bool in_bot = ignore_bottom ? true
+                    : c.center.y - c.radius >= arena.center.y - half - tol;
 
     return in_x and in_top and in_bot;
 }

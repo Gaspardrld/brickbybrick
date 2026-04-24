@@ -1,5 +1,11 @@
+// graphic.h
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #ifndef GRAPHIC_H
 #define GRAPHIC_H
+
+#include <cmath>
 
 enum Color
 {
@@ -17,7 +23,8 @@ enum Color
 
 void set_color(Color color);
 
-void draw_circle(double x, double y, double radius, bool filled = true);
+void draw_circle(double x, double y, double radius, bool filled = true, 
+                            double angle_start=0, double angle_end=2 * M_PI);
 
 void draw_rectangle(double x, double y, double width, double height);
 

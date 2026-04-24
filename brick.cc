@@ -1,3 +1,7 @@
+// brick.cc
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #include <iostream>
 #include "brick.h"
 #include "message.h"
@@ -19,20 +23,25 @@ const Square& Brick::get_form() const {
     return form;
 }
 
-int Rainbow_Brick::get_hit_points() const {
+int RainbowBrick::get_hit_points() const {
     return hit_points;
 }
 
-void Ball_Brick::draw() const {
+void BallBrick::draw() const {
     form.draw(RED);
     ball_in_brick.draw(BLACK, true);
 }
 
-void Ball_Brick::create_ball_in_brick() {
+BallBrick::BallBrick(double x, double y, double side)
+: Brick(x, y, side) {
+    create_ball_in_brick();
+}
+
+void BallBrick::create_ball_in_brick() {
     ball_in_brick = {{form.center.x, form.center.y}, new_ball_radius};
 }
 
-void Rainbow_Brick::draw() const {
+void RainbowBrick::draw() const {
     Color color;
     switch (hit_points) {
         case 1: color = RED;    break;
@@ -46,24 +55,24 @@ void Rainbow_Brick::draw() const {
     form.draw(color);
 }
 
-void Split_Brick::draw() const {
+void SplitBrick::draw() const {
     draw(RED);
 }
 
-void Split_Brick :: draw(Color color) const {
+void SplitBrick::draw(Color color) const {
     form.draw(color);
-        switch(color) {
-        case RED: color= ORANGE; break; 
-        case ORANGE: color= YELLOW; break;
-        case YELLOW: color= GREEN;  break;
-        default: color = color; break;
-    }   
+    switch (color) {
+        case RED:    color = ORANGE; break;
+        case ORANGE: color = YELLOW; break;
+        case YELLOW: color = GREEN;  break;
+        default:                     break;
+    }
     for (auto& brick : splitBricks) {
         brick->draw(color);
     }
 }
 
-Split_Brick::Split_Brick(double x, double y, double side)
+SplitBrick::SplitBrick(double x, double y, double side)
 : Brick(x, y, side)
 {
     double new_side = (side - split_brick_gap) / 2;
@@ -73,34 +82,34 @@ Split_Brick::Split_Brick(double x, double y, double side)
     double top  = y - side / 2;
 
     // HG
-    splitBricks.push_back(std::make_unique<Split_Brick>(
+    splitBricks.push_back(std::make_unique<SplitBrick>(
         left + new_side / 2,
         top  + new_side / 2,
         new_side
     ));
 
     // HD
-    splitBricks.push_back(std::make_unique<Split_Brick>(
+    splitBricks.push_back(std::make_unique<SplitBrick>(
         left + new_side + split_brick_gap + new_side / 2,
         top  + new_side / 2,
         new_side
     ));
 
     // BG
-    splitBricks.push_back(std::make_unique<Split_Brick>(
+    splitBricks.push_back(std::make_unique<SplitBrick>(
         left + new_side / 2,
         top  + new_side + split_brick_gap + new_side / 2,
         new_side
     ));
 
     // BD
-    splitBricks.push_back(std::make_unique<Split_Brick>(
+    splitBricks.push_back(std::make_unique<SplitBrick>(
         left + new_side + split_brick_gap + new_side / 2,
         top  + new_side + split_brick_gap + new_side / 2,
         new_side
     )); 
 }
 
-int Rainbow_Brick :: get_type() const { return 0; }
-int Ball_Brick :: get_type() const { return 1; }
-int Split_Brick :: get_type() const { return 2; }
+int RainbowBrick::get_type() const { return 0; }
+int BallBrick::get_type() const { return 1; }
+int SplitBrick::get_type() const { return 2; }

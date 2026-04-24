@@ -1,3 +1,7 @@
+// project.cc
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #include <gtkmm/application.h>
 #include "gui.h"
 

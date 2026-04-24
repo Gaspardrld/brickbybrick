@@ -1,6 +1,9 @@
+// message.h
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #ifndef MESSAGE_H
 #define MESSAGE_H
-//
 // message.h  : 13 fonctions pour l'affichage des messages d'erreur
 //              et une fonction supplémentaire pour indiquer le succès de la lecture
 //

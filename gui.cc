@@ -1,3 +1,7 @@
+// gui.cc
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #include <filesystem>
 #include <iostream>
 #include "constants.h"

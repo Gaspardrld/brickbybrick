@@ -1,3 +1,7 @@
+// game.cc
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -9,9 +13,10 @@ using namespace std;
 
 namespace {
     enum BrickType { RAINBOW = 0, BALL_BRICK = 1, SPLIT_BRICK = 2 };
+    constexpr double ball_spawn_gap = 1.0; // gap minimal entre raquette et balle spawned
 }
 
-Game :: Game() : 
+Game::Game() : 
     total_score(0), 
     nb_lives(0), 
     nb_bricks(0), 
@@ -22,7 +27,7 @@ Game :: Game() :
 {    
 }
 
-Game :: ~Game() {
+Game::~Game() {
     reset();
 }
 
@@ -69,7 +74,7 @@ bool Game::decode_line(const string& line) {
 
 
 
-void Game :: reset() {
+void Game::reset() {
     total_score = 0;
     nb_lives = 0;
     current_state = EXPECT_SCORE;
@@ -80,7 +85,7 @@ void Game :: reset() {
     balls.clear(); 
 }
 
-bool Game :: read(const char* file_name) {
+bool Game::read(const char* file_name) {
     std::string full_name = std::string("tests/") + file_name;
     last_file = file_name;
     reset(); 
@@ -93,16 +98,18 @@ bool Game :: read(const char* file_name) {
         istringstream iss(line);
         string first_word;
 
-        if (!(iss >> first_word) || first_word[0] == '#') { //ignore vides/commentaires
+        // ignorer les lignes vides et commentaires
+        if (!(iss >> first_word) || first_word[0] == '#') {
             continue;
         }
-        if (!decode_line(line)) { //  affiche le message d'erreur correspondant + reset
+        if (!decode_line(line)) {
             reset();
             return false;
         }
     }
     file.close();
-    if (current_state != FINISH) { //vérification fichier complet et éléments lus      
+    // vérification que le fichier est complet
+    if (current_state != FINISH) {
         reset();
         return false;
     }  
@@ -110,7 +117,7 @@ bool Game :: read(const char* file_name) {
     return true;
 }
 
-bool Game :: save(const std::string& file_name ) {
+bool Game::save(const std::string& file_name ) {
     ofstream file(file_name);
     if (!file) {
         return false;
@@ -125,7 +132,7 @@ bool Game :: save(const std::string& file_name ) {
             file << brick->get_type() << " "<< brick->get_form().center.x 
                  << " "<< brick->get_form().center.y << " "<< brick->get_form().side 
                  << " "
-                 << static_cast<const Rainbow_Brick*>(brick.get())->get_hit_points() 
+                 << static_cast<const RainbowBrick*>(brick.get())->get_hit_points() 
                  << "\n";
         }
         else {
@@ -143,30 +150,30 @@ bool Game :: save(const std::string& file_name ) {
     return true;
 }
 
-int Game :: get_score() const {
+int Game::get_score() const {
     return total_score;
 }
 
-int Game :: get_nb_lives() const {
+int Game::get_nb_lives() const {
     return nb_lives;
 }
 
-int Game :: get_nb_bricks() const {
+int Game::get_nb_bricks() const {
     return bricks.size();
 }
 
-int Game :: get_nb_balls() const {
+int Game::get_nb_balls() const {
     return balls.size();
 }
 
-void Game :: step() {
+void Game::step() {
     for (auto& ball : balls){
         ball.move();
     }
     move_paddle();
 }
 
-void Game :: move_paddle() {
+void Game::move_paddle() {
     double x_previous= paddle.get_circle().center.x;
     paddle.move();
 
@@ -180,8 +187,7 @@ void Game :: move_paddle() {
     }
 
     double r = paddle.get_circle().radius;
-    double value = paddle.get_circle().center.y / r;
-    double half_width = r * cos(asin(value));
+    double half_width = r * cos(paddle.get_theta());
     
     // clamper aux bords
     paddle.get_circle().center.x = max(half_width+epsil_zero, 
@@ -189,7 +195,7 @@ void Game :: move_paddle() {
                         paddle.get_circle().center.x));
 }
 
-bool Game :: restart() {
+bool Game::restart() {
     return read(last_file.c_str());
 }
 
@@ -205,23 +211,21 @@ const Paddle& Game::get_paddle() const {
     return paddle;
 }
 
-void Game :: set_target_paddle(double x) {
+void Game::set_target_paddle(double x) {
     paddle.set_target(x);
 }
 
 void Game::new_ball(){
     double pos_x = paddle.get_circle().center.x;
-    double pos_y = paddle.get_circle().center.y 
-            + paddle.get_circle().radius 
-            + new_ball_radius
-            + 1
-            + epsil_zero; 
-            //positionné juste au dessus de la raquette
+    // positionné juste au dessus de la raquette
+    double pos_y = paddle.get_circle().center.y
+            + paddle.get_circle().radius
+            + new_ball_radius + ball_spawn_gap + epsil_zero;
     Ball new_b(pos_x, pos_y, new_ball_radius, 0, new_ball_delta_norm);
     balls.push_back(new_b);
 }
 
-bool Game :: verif_score(istringstream& iss) {
+bool Game::verif_score(istringstream& iss) {
     if (!(iss >> total_score)) { 
         return false;
     }
@@ -276,53 +280,50 @@ bool Game::verif_nb_bricks(istringstream& iss) {
 }
 
 
-bool Game::verif_brick(istringstream& iss) {
-    int type;
-    double x, y, side;
-    if (!(iss >> type >> x >> y >> side)) {return false;}
-
-    std::unique_ptr<Brick> new_brick;
+std::unique_ptr<Brick> Game::create_brick(int type, double x, double y,
+                                          double side, istringstream& iss) {
     switch (type) {
         case RAINBOW: {
             int hit_points;
-            if (!(iss >> hit_points)) return false;
+            if (!(iss >> hit_points)) return nullptr;
             if (hit_points < 1 || hit_points > 7) {
                 cout << message::invalid_hit_points(hit_points);
-                return false;
+                return nullptr;
             }
-            new_brick = std::make_unique<Rainbow_Brick>(x, y, side, hit_points);
-            break;
+            return std::make_unique<RainbowBrick>(x, y, side, hit_points);
         }
         case BALL_BRICK:
-            new_brick = std::make_unique<Ball_Brick>(x, y, side);
-            break;
+            return std::make_unique<BallBrick>(x, y, side);
         case SPLIT_BRICK:
-            new_brick = std::make_unique<Split_Brick>(x, y, side);
-            break;
+            return std::make_unique<SplitBrick>(x, y, side);
         default:
             cout << message::invalid_brick_type(type);
-            return false;
+            return nullptr;
     }
-    if (!new_brick->valid_brick()){
-        return false;
-    }
-    for (size_t i = 0; i <bricks.size(); ++i) {
+}
+
+bool Game::verif_brick(istringstream& iss) {
+    int type;
+    double x, y, side;
+    if (!(iss >> type >> x >> y >> side)) return false;
+
+    auto new_brick = create_brick(type, x, y, side, iss);
+    if (!new_brick || !new_brick->valid_brick()) return false;
+
+    for (size_t i = 0; i < bricks.size(); ++i) {
         if (squares_intersect(new_brick->get_form(),
-                                bricks[i]->get_form(), false)) {
+                              bricks[i]->get_form(), false)) {
             cout << message::collision_bricks(i, nb_bricks_read);
             return false;
         }
-    }           
-    if (circle_square_intersect(paddle.get_circle(),
-                                    new_brick->get_form())) {
+    }
+    if (circle_square_intersect(paddle.get_circle(), new_brick->get_form())) {
         cout << message::collision_paddle_brick(nb_bricks_read);
         return false;
     }
     bricks.push_back(std::move(new_brick));
-    nb_bricks_read++; //incrémentation du nombre de briques lues
-    if (nb_bricks_read == nb_bricks) {
-        current_state = EXPECT_NB_BALLS;
-    }
+    ++nb_bricks_read;
+    if (nb_bricks_read == nb_bricks) current_state = EXPECT_NB_BALLS;
     return true;
 }
 
@@ -356,25 +357,22 @@ bool Game::verif_balls(istringstream& iss) {
         return false;
     }
 
-    // vérification de la collision avec les briques déjà lues
     for (size_t i = 0; i < bricks.size(); ++i) {
         if (circle_square_intersect(ball.get_circle(),
-                                    bricks[i]->get_form())) { 
+                                    bricks[i]->get_form())) {
             cout << message::collision_ball_brick(nb_balls_read, i);
             return false;
         }
     }
 
-    // vérification de la collision avec les autres balles déjà lues
     for (size_t i = 0; i < balls.size(); ++i) {
-        if (circles_intersect(ball.get_circle(), balls[i].get_circle())) { 
+        if (circles_intersect(ball.get_circle(), balls[i].get_circle())) {
             cout << message::collision_balls(nb_balls_read, i);
             return false;
         }
     }
 
-    // vérification de la collision avec la raquette
-    if (circles_intersect(paddle.get_circle(), ball.get_circle())) { 
+    if (circles_intersect(paddle.get_circle(), ball.get_circle())) {
         cout << message::collision_paddle_ball(nb_balls_read);
         return false;
     }

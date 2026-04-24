@@ -1,3 +1,7 @@
+// constants.h
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 

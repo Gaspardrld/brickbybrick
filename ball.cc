@@ -1,4 +1,6 @@
-//ball.cc Devilez Antoine version rendu 2
+// ball.cc
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
 
 #include <iostream>
 #include "ball.h"
@@ -41,7 +43,7 @@ void Ball::draw() const {
     form.draw(BLACK, true);
 }
  
-void Ball :: move(){
+void Ball::move() {
     form.center.x += delta.x;
     form.center.y += delta.y;
 }
