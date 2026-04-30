@@ -26,10 +26,12 @@ private:
     std::array<Gtk::Label, 4> info_text, info_value;
     Gtk::DrawingArea drawing;
     Game game;
-    bool file_error= false;
+    enum GameState { NO_FILE, FILE_BAD, READY, RUNNING };
+    GameState state = NO_FILE;
     std::string last_file;
 
     void set_commands();
+    void update_buttons();
 
     void exit_clicked();
     void open_clicked();

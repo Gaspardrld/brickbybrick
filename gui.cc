@@ -50,12 +50,37 @@ My_window::My_window(string file_name)
     set_infos();
     set_drawing();
     if (file_name.empty() == false) {
-        if (!game.read(file_name.c_str())) {
-            file_error = true;
-        }
+        Game::ReadResult res = game.read(file_name.c_str());
+        if (res == Game::OK)              state = READY;
+        else if (res == Game::FILE_NOT_FOUND) state = NO_FILE;
+        else                              state = FILE_BAD;
         update_infos();
         drawing.queue_draw();
     }
+    update_buttons();
+}
+
+void My_window::update_buttons()
+{
+    // Configuration des boutons selon l'état du jeu (cf. forum) :
+    //   NO_FILE  : exit, open
+    //   FILE_BAD : exit, open, restart
+    //   READY    : exit, open, save, restart, start, step
+    //   RUNNING  : start (label "stop") uniquement
+    bool exit_on    = (state != RUNNING);
+    bool open_on    = (state != RUNNING);
+    bool save_on    = (state == READY);
+    bool restart_on = (state == FILE_BAD || state == READY);
+    bool start_on   = (state == READY || state == RUNNING);
+    bool step_on    = (state == READY);
+
+    buttons[EXIT].set_sensitive(exit_on);
+    buttons[OPEN].set_sensitive(open_on);
+    buttons[SAVE].set_sensitive(save_on);
+    buttons[RESTART].set_sensitive(restart_on);
+    buttons[START].set_sensitive(start_on);
+    buttons[STEP].set_sensitive(step_on);
+    buttons[START].set_label(state == RUNNING ? "stop" : "start");
 }
 void My_window::set_commands()
 {
@@ -98,39 +123,34 @@ void My_window::save_clicked()
 }
 void My_window::restart_clicked()
 {
-    game.restart();
+    if (state == NO_FILE) return;
+    if (game.restart()) state = READY;
+    else                state = FILE_BAD;
     update_infos();
+    update_buttons();
     drawing.queue_draw();
 }
 void My_window::start_clicked()
 {
-    cout << __func__ << endl;
+    if (state != READY && state != RUNNING) return;
     if (loop_activated)
     {
         loop_conn.disconnect();
         loop_activated = false;
-        buttons[EXIT].set_sensitive(true);
-        buttons[OPEN].set_sensitive(true);
-        buttons[SAVE].set_sensitive(true);
-        buttons[RESTART].set_sensitive(true);
-        buttons[START].set_label("start");
-        buttons[STEP].set_sensitive(true);
+        state = READY;
     }
-    else // TODO: only if the game is not finished
+    else
     {
         loop_conn =
             Glib::signal_timeout().connect(sigc::mem_fun(*this, &My_window::loop), dt);
         loop_activated = true;
-        buttons[EXIT].set_sensitive(false);
-        buttons[OPEN].set_sensitive(false);
-        buttons[SAVE].set_sensitive(false);
-        buttons[RESTART].set_sensitive(false);
-        buttons[START].set_label("stop");
-        buttons[STEP].set_sensitive(false);
+        state = RUNNING;
     }
+    update_buttons();
 }
 void My_window::step_clicked()
 {
+    if (state != READY) return;
     game.step();
     update_infos();
     drawing.queue_draw();
@@ -213,8 +233,12 @@ void My_window::dialog_response(int response, Gtk::FileChooserDialog *dialog)
     case OPEN_FILE:
         if (file_name != "")
         {
-            game.read(file_name.string().c_str());
+            Game::ReadResult res = game.read(file_name.string().c_str());
+            if (res == Game::OK)              state = READY;
+            else if (res == Game::FILE_NOT_FOUND) state = NO_FILE;
+            else                              state = FILE_BAD;
             update_infos();
+            update_buttons();
             drawing.queue_draw();
             dialog->hide();
         }
@@ -281,7 +305,7 @@ void My_window::on_draw(const Cairo::RefPtr<Cairo::Context> &cr, int width, int 
     cr->scale(side / (arena_size), -side / (arena_size));
 
     // TODO: draw the game
-    if (file_error) {
+    if (state == NO_FILE || state == FILE_BAD) {
         return;
     }
     for (const auto& brick : game.get_bricks()) {
