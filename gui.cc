@@ -62,11 +62,6 @@ My_window::My_window(string file_name)
 
 void My_window::update_buttons()
 {
-    // Configuration des boutons selon l'état du jeu (cf. forum) :
-    //   NO_FILE  : exit, open
-    //   FILE_BAD : exit, open, restart
-    //   READY    : exit, open, save, restart, start, step
-    //   RUNNING  : start (label "stop") uniquement
     bool exit_on    = (state != RUNNING);
     bool open_on    = (state != RUNNING);
     bool save_on    = (state == READY);
