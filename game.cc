@@ -85,13 +85,13 @@ void Game::reset() {
     balls.clear(); 
 }
 
-bool Game::read(const char* file_name) {
+Game::ReadResult Game::read(const char* file_name) {
     std::string full_name = std::string("tests/") + file_name;
     last_file = file_name;
-    reset(); 
+    reset();
     ifstream file(full_name);
     if (file.fail()) {
-        return false;
+        return FILE_NOT_FOUND;
     }
     string line;
     while (getline(file, line)) {
@@ -104,17 +104,17 @@ bool Game::read(const char* file_name) {
         }
         if (!decode_line(line)) {
             reset();
-            return false;
+            return INVALID_CONTENT;
         }
     }
     file.close();
     // vérification que le fichier est complet
     if (current_state != FINISH) {
         reset();
-        return false;
-    }  
-    cout << message::success();  
-    return true;
+        return INVALID_CONTENT;
+    }
+    cout << message::success();
+    return OK;
 }
 
 bool Game::save(const std::string& file_name ) {
@@ -196,7 +196,7 @@ void Game::move_paddle() {
 }
 
 bool Game::restart() {
-    return read(last_file.c_str());
+    return read(last_file.c_str()) == OK;
 }
 
 const std::vector<std::unique_ptr<Brick>>& Game::get_bricks() const {

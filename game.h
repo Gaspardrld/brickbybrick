@@ -55,10 +55,12 @@ private:
     std::string last_file;
 
 public:
+    enum ReadResult { OK, FILE_NOT_FOUND, INVALID_CONTENT };
+
     Game();
     ~Game();
     void reset();
-    bool read(const char* file_name);
+    ReadResult read(const char* file_name);
     bool save(const std::string&);
     int get_score() const;
     int get_nb_lives() const;
