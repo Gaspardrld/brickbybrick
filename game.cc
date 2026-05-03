@@ -500,13 +500,26 @@ void Game::update_entities() {
     }
 }
 
+
 void Game::update_status() {
     if (nb_lives <= 0 && nb_balls == 0) {
-        status = LOST;
+        lost();
     } else if (nb_bricks == 0) {
-        status = WON;
-        total_score += score_per_life * nb_lives;
+        win();
     } else {
         status = ONGOING;
     }
+}
+
+
+void Game::lost() {
+    status = LOST;
+    total_score = 0;
+    message::loss();
+}
+
+void Game::win() {
+    status = WON;
+    total_score += score_per_life * nb_lives;
+    message::win();
 }
