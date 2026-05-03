@@ -186,6 +186,7 @@ void Game::step() {
                 hit_colliding_brick(ball);
                 hit_colliding_ball(ball);
                 hit_colliding_paddle(ball);
+                hit_collisions_wall(ball);
             } 
         }
     }
@@ -473,6 +474,60 @@ void Game::hit_colliding_brick(Ball& ball) {
             return;
         }
     }
+}
+
+void Game::hit_collisions_wall(Ball& ball) {
+    Point d = ball.get_delta();
+    ball.undo_move();
+
+    Point c = ball.get_circle().center;
+    double r = ball.get_circle().radius;
+    Point fut = { c.x + d.x, c.y + d.y };
+
+    bool hit_left   = (fut.x < r + epsil_zero);
+    bool hit_right  = (fut.x > arena_size - r - epsil_zero);
+    bool hit_top    = (fut.y > arena_size - r - epsil_zero);
+    bool hit_x = hit_left || hit_right;
+
+    if (hit_x && hit_top) {
+        double dist_x = std::abs(fut.x - arena_size / 2);
+        double dist_y = std::abs(fut.y - arena_size / 2);
+        if (dist_x > dist_y) d.x = -d.x;
+        else d.y = -d.y;
+    }
+    else if (hit_x) d.x = -d.x;
+    else if (hit_top) d.y = -d.y;
+
+    ball.set_delta(d);
+}
+
+void Game::hit_colliding_paddle(Ball& ball) {
+    if (!circles_intersect(ball.get_circle(), paddle.get_circle())) return;
+
+    ball.undo_move();
+
+    Point cb = ball.get_circle().center;
+    Point cp = paddle.get_circle().center;
+    Point n = { cb.x - cp.x, cb.y - cp.y };
+    double len = norm(n);
+    if (len < epsil_zero) return;
+    n.x /= len; n.y /= len;
+
+    Point v = ball.get_delta();
+    Point vp = paddle.get_last_delta();   // à ajouter dans Paddle
+
+    double v_n  = dot_product(v,  n);
+    double vp_n = dot_product(vp, n);
+
+    double imp = 2.0 * (-v_n + vp_n);
+    Point new_d = { v.x + imp * n.x, v.y + imp * n.y };
+
+    double speed = norm(new_d);
+    if (speed > delta_norm_max) {
+        new_d.x *= delta_norm_max / speed;
+        new_d.y *= delta_norm_max / speed;
+    }
+    ball.set_delta(new_d);
 }
 
 
