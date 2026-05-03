@@ -177,32 +177,26 @@ void Game::step() {
             balls.pop_back();
             nb_lives--;
         }
-        int nb_rebonds = 0;
+        unsigned int nb_rebonds = 0;
         while (has_collision(ball)) {
             //ANNULATION DU DEPLACEMENT !!!!!!!!!!!
             if (nb_rebonds < nb_bounce_max) {
-                // DEPLACEMENT AVEC REBOND !!!!!!!!!!!
                 nb_rebonds++;
-                hit_colliding_brick(ball);
-                hit_colliding_ball(ball);
-                hit_colliding_paddle(ball);
-                hit_collisions_wall(ball);
+                check_types_collisions(ball);
             } 
         }
     }
     move_paddle();    
-    for (auto& ball : ball) {
+    for (auto& ball : balls) {
         if (circles_intersect(ball.get_circle(), paddle.get_circle())){
             //DEPLACEMENT AVEC REBOND PADDLE -- pas compté dans nb_rebondd
         }
         while (has_collision(ball)) {
+            unsigned int nb_rebonds = 0;
             // ANNULATION DU DEPLACEMENT !!!!!!!!!!!
             if (nb_rebonds < nb_bounce_max) {
-                // DEPLACEMENT AVEC REBOND !!!!!!!!!!!
                 nb_rebonds++;
-                hit_colliding_brick(ball);
-                hit_colliding_ball(ball);
-                hit_colliding_paddle(ball);
+                check_types_collisions(ball);
             }
         }
     }
@@ -361,7 +355,7 @@ bool Game::verif_brick(istringstream& iss) {
     if (!(iss >> type >> x >> y >> side)) return false;
 
     auto new_brick = create_brick(type, x, y, side, iss);
-    if (!new_brick || !new_brick->valid_brick()) return false;
+    if (!new_brick) return false;
 
     for (size_t i = 0; i < bricks.size(); ++i) {
         if (squares_intersect(new_brick->get_form(),
@@ -454,6 +448,15 @@ bool Game::has_collision(const Ball& ball) const {
     return false;
 }
 
+void Game::check_types_collisions(Ball& ball) {
+    hit_colliding_brick(ball);
+    for (auto& other : balls) {
+        if (&other != &ball) {
+            hit_colliding_ball(ball, &other);
+        }
+    }
+    hit_colliding_paddle(ball);
+}
 
 void Game::hit_colliding_brick(Ball& ball) {
     for (auto& brick : bricks) {
@@ -462,8 +465,8 @@ void Game::hit_colliding_brick(Ball& ball) {
             if (brick->get_type() == 1) {
                 new_ball(brick->get_ball_in_brick().center.x, 
                 brick->get_ball_in_brick().center.y + ball_spawn_gap, 
-                new_ball_radius, ball->get_delta().x, 
-                ball->get_delta().y);
+                new_ball_radius, ball.get_delta().x, 
+                ball.get_delta().y);
             }
             if (brick->get_type() == 2) {
                 for (auto& child : brick->get_children()) {
@@ -474,6 +477,47 @@ void Game::hit_colliding_brick(Ball& ball) {
             return;
         }
     }
+}
+
+void Game::hit_colliding_ball(Ball& ball, Ball* other_ball) {
+    if (other_ball == nullptr) return;
+    if (!circles_intersect(ball.get_circle(), other_ball->get_circle())) return;
+    
+    // Annulation du déplacement
+    ball.undo_move();
+    
+    // Vecteur normal unitaire (de other vers ball)
+    Point cb = ball.get_circle().center;
+    Point co = other_ball->get_circle().center;
+    Point n = { cb.x - co.x, cb.y - co.y };
+    double len = norm(n);
+    if (len < epsil_zero) return;  // Évite division par 0
+    n.x /= len;
+    n.y /= len;
+    
+    // Projections des deltas sur la normale (vitesses nominales)
+    Point v = ball.get_delta();
+    Point v_autre = other_ball->get_delta();
+    double vn = dot_product(v, n);
+    double v_autre_n = dot_product(v_autre, n);
+    
+    // Calcul de l'impulsion selon la formule de la spec
+    double r = ball.get_circle().radius;
+    double r_autre = other_ball->get_circle().radius;
+    double impulsion = (-vn + v_autre_n) * (2.0 * r_autre * r_autre) 
+                     / (r * r + r_autre * r_autre);
+    
+    // Nouveau delta = delta + impulsion * normale
+    Point new_d = { v.x + impulsion * n.x, v.y + impulsion * n.y };
+    
+    // Bridage à delta_norm_max pour éviter l'effet tunnel
+    double speed = norm(new_d);
+    if (speed > delta_norm_max) {
+        new_d.x *= delta_norm_max / speed;
+        new_d.y *= delta_norm_max / speed;
+    }
+    
+    ball.set_delta(new_d);
 }
 
 void Game::hit_collisions_wall(Ball& ball) {
@@ -570,11 +614,11 @@ void Game::update_status() {
 void Game::lost() {
     status = LOST;
     total_score = 0;
-    message::loss();
+    message::lost();
 }
 
 void Game::win() {
     status = WON;
     total_score += score_per_life * nb_lives;
-    message::win();
+    message::won();
 }
