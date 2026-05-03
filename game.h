@@ -87,6 +87,9 @@ public:
     bool has_collision(const Ball& ball) const;
     void update_entities();
     void update_status();
+
+    void lost();
+    void win();
 };
 
 #endif
