@@ -1,8 +1,13 @@
+// ball.h
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #ifndef BALL_H
 #define BALL_H
 
 #include "tools.h"
-#include "constante.h"
+#include "constants.h"
+#include "graphic_gui.h"
 
 class Ball {
 private :
@@ -15,11 +20,14 @@ private :
 public :
     bool valid_ball() const;
 
-    Circle get_circle() const;
+    const Circle get_circle() const;
     Point  get_delta()  const;
-
+    
     Ball(double x, double y, double radius, double d_x, double d_y) 
     : form({{x,y}, radius}), delta({d_x, d_y}) {}
+
+    void draw() const;
+    void move();
 };
 
 #endif

@@ -1,7 +1,12 @@
+// tools.h
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #ifndef TOOLS_H
 #define TOOLS_H
 
 #include <cmath>
+#include "graphic.h"
 
 
 constexpr double epsil_zero = 0.125;
@@ -15,11 +20,14 @@ struct Point {
 struct Circle {
     Point  center;
     double radius = 0.0;
+    void draw(Color color, bool filled = true,double angle_start=0, 
+                                            double angle_end=2 * M_PI) const;
 };
 
 struct Square {
     Point  center;
     double side   = 0.0;
+    void draw(Color color) const;
 };
 
 
@@ -52,5 +60,7 @@ bool square_in_square(const Square& inner, const Square& outer,
                                             bool use_tolerance = true);
 
 Point closest_point_on_square(Point p, const Square& s);
+
+void draw_cross(double x, double y, double size, Color color);
 
 #endif

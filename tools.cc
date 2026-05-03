@@ -1,3 +1,7 @@
+// tools.cc
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #include "tools.h"
 #include <algorithm>  // std::min, std::max
 #include <cmath>      // std::sqrt, std::abs
@@ -19,7 +23,24 @@ double distance(Point a, Point b) {
     return norm({a.x - b.x, a.y - b.y});
 }
 
+void Circle::draw(Color color, bool filled,
+                  double angle_start, double angle_end) const {
+    set_color(color);
+    draw_circle(center.x, center.y, radius, filled, angle_start, angle_end);
+}
 
+void Square::draw(Color color) const {
+    set_color(color);
+    draw_rectangle(center.x - side/2, center.y - side/2, side, side);
+}
+
+void draw_cross(double x, double y, double size, Color c) {
+    set_color(c);  
+    // ligne horizontale
+    draw_line(x - size, y, x + size, y);
+    // Ligne verticale
+    draw_line(x, y - size, x, y + size);
+}
 
 Point closest_point_on_square(Point p, const Square& s) {
     double half = s.side/2.0;
@@ -88,8 +109,8 @@ bool circle_in_square(const Circle& c, const Square& arena,
     bool in_x   = c.center.x - c.radius >= arena.center.x - half - tol 
                 and c.center.x + c.radius <= arena.center.x + half + tol;
     bool in_top = c.center.y + c.radius <= arena.center.y + half + tol;
-    bool in_bot = ignore_bottom ? true 
-                                : c.center.y - c.radius >= arena.center.y - half - tol;
+    bool in_bot = ignore_bottom ? true
+                    : c.center.y - c.radius >= arena.center.y - half - tol;
 
     return in_x and in_top and in_bot;
 }

@@ -1,3 +1,7 @@
+// ball.cc
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #include <iostream>
 #include "ball.h"
 #include "message.h"
@@ -27,7 +31,7 @@ double Ball::norm_delta_squared() const {
     return norm_squared(delta);
 }
 
-Circle Ball::get_circle() const {
+const Circle Ball::get_circle() const {
     return form;
 }
 
@@ -35,4 +39,11 @@ Point Ball::get_delta() const {
     return delta;
 }
 
+void Ball::draw() const {
+    form.draw(BLACK, true);
+}
  
+void Ball::move() {
+    form.center.x += delta.x;
+    form.center.y += delta.y;
+}
