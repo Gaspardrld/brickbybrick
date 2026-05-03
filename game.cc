@@ -476,8 +476,6 @@ void Game::hit_colliding_brick(Ball& ball) {
 }
 
 
-
-
 void Game::update_entities() {
     auto i = 0;
     while (i < (int)balls.size()) {
@@ -507,6 +505,7 @@ void Game::update_status() {
         status = LOST;
     } else if (nb_bricks == 0) {
         status = WON;
+        total_score += score_per_life * nb_lives;
     } else {
         status = ONGOING;
     }
