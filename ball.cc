@@ -47,3 +47,6 @@ void Ball::move() {
     form.center.x += delta.x;
     form.center.y += delta.y;
 }
+
+void Ball::undo_move() { form.center.x -= delta.x; form.center.y -= delta.y; }
+void Ball::set_delta(Point d) { delta = d; }
