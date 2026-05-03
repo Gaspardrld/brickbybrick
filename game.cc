@@ -439,7 +439,7 @@ bool Game::verif_balls(istringstream& iss) {
 }
 
 
-bool Game::has_collision(coBall& ball) const {
+bool Game::has_collision(const Ball& ball) const {
     if (!circle_in_square(ball.get_circle(), arena, true, true)) return true;
     for (const auto& brick : bricks)
         if (circle_square_intersect(ball.get_circle(), brick->get_form())) {
