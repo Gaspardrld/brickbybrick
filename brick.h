@@ -10,16 +10,23 @@
 #include "constants.h"
 #include "graphic_gui.h"
 
+
 class Brick {
 protected :
     Square form;
+    bool living = true;
 public :
-    const Square& get_form() const;
-    bool valid_brick() const;
     Brick(double x, double y, double side) : form({{x,y}, side}) {}
-    virtual void draw() const = 0;
     virtual ~Brick() = default;
+
+    const Square& get_form() const;
+    virtual void draw() const = 0;
     virtual int get_type() const = 0;
+    virtual void hit() = 0;
+    virtual std::vector<std::unique_ptr<Brick>> get_children() const { return {}; }
+
+    bool valid_brick() const;
+    bool is_living() const;
 };
 
 
@@ -29,9 +36,12 @@ private :
 public :
     RainbowBrick(double x, double y, double side, int hp)
     : Brick(x,y,side), hit_points(hp) {}
+
     int get_hit_points() const;
     void draw() const override;
     int get_type() const override;
+
+    void hit() override;
 };
 
 
@@ -40,9 +50,12 @@ private :
     Circle ball_in_brick;
 public :
     BallBrick(double x, double y, double side);
+
+    Circle get_ball_in_brick() const;
     void draw() const override;
     int get_type() const override;
     void create_ball_in_brick();
+    void hit() override;
 };
 
 
@@ -51,9 +64,12 @@ private :
     std::vector<std::unique_ptr<SplitBrick>> splitBricks; 
 public :
     SplitBrick(double x, double y, double side);
+
     void draw() const override;
     void draw(Color color) const;
     int get_type() const override;
+    void hit() override;
+    std::vector<std::unique_ptr<Brick>> get_children() const override;
 };
 
 #endif
