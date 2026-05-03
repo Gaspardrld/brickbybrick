@@ -83,6 +83,7 @@ void Game::reset() {
 
     bricks.clear();
     balls.clear(); 
+    paddle = Paddle();
 }
 
 Game::ReadResult Game::read(const char* file_name) {
@@ -183,11 +184,12 @@ void Game::step() {
                 // DEPLACEMENT AVEC REBOND !!!!!!!!!!!
                 nb_rebonds++;
                 hit_colliding_brick(ball);
+                hit_colliding_ball(ball);
+                hit_colliding_paddle(ball);
             } 
         }
     }
     move_paddle();    
-
     for (auto& ball : ball) {
         if (circles_intersect(ball.get_circle(), paddle.get_circle())){
             //DEPLACEMENT AVEC REBOND PADDLE -- pas compté dans nb_rebondd
@@ -198,16 +200,13 @@ void Game::step() {
                 // DEPLACEMENT AVEC REBOND !!!!!!!!!!!
                 nb_rebonds++;
                 hit_colliding_brick(ball);
+                hit_colliding_ball(ball);
+                hit_colliding_paddle(ball);
             }
         }
     }
-    if (nb_lives <= 0 && nb_balls== 0) {
-        status = LOST;
-    } else {
-        if (nb_bricks == 0) {
-            status = WON;
-        }
-    }
+    update_entities();
+    update_status();
 }
 
 
@@ -426,7 +425,7 @@ bool Game::verif_balls(istringstream& iss) {
 
 bool Game::has_collision(const Ball& ball) const {
     if (!circle_in_square(ball.get_circle(), arena, true, true)) return true;
-    for (auto& brick : bricks)
+    for (const auto& brick : bricks)
         if (circle_square_intersect(ball.get_circle(), brick->get_form())) {
              return true;
         }
@@ -439,17 +438,23 @@ bool Game::has_collision(const Ball& ball) const {
     return false;
 }
 
+
 void Game::hit_colliding_brick(const Ball& ball) {
     for (auto& brick : bricks) {
         if (circle_square_intersect(ball.get_circle(), brick->get_form())) {
-            brick->hit(Point last_ball_delta);
+            brick->hit();
             if (brick->get_type() == 1) {
-                new_ball(brick->get_circle().center.x, 
-                brick->get_().center.y + ball_spawn_gap, 
+                new_ball(brick->get_ball_in_brick().center.x, 
+                brick->get_ball_in_brick().center.y + ball_spawn_gap, 
                 new_ball_radius, ball->get_delta().x, 
                 ball->get_delta().y);
             }
-            score += score_per_hit;
+            if (brick->get_type() == 2) {
+                for (auto& child : brick->get_children()) {
+                    bricks.push_back(std::move(child));
+                }
+            }
+            total_score += score_per_hit;
             return;
         }
     }
@@ -459,33 +464,35 @@ void Game::hit_colliding_brick(const Ball& ball) {
 
 
 void Game::update_entities() {
-    size_t i = 0;
-    while (i < balls.size()) {
+    auto i = 0;
+    while (i < (int)balls.size()) {
         if (!balls[i].is_living()) {
             balls[i] = balls.back();
             balls.pop_back();
+            nb_balls--;
         } else {
             i++;
         }
     }
-    size_t j = 0;
-    while (j < bricks.size()) {
+
+    auto j = 0;
+    while (j < (int)bricks.size()) {
         if (!bricks[j]->is_living()) {
-            if (bricks[j]->get_type() == 1) {
-                balls.push_back(Ball(bricks[j]->get_form().center.x,
-                                     bricks[j]->get_form().center.y,
-                                     new_ball_radius,
-                                     last_ball_delta.x, last_ball_delta.y));
-            }
-            if (bricks[j]->get_type() == 2) {
-                auto children = bricks[j]->get_children();
-                for (auto& child : children)
-                    bricks.push_back(std::move(child));
-            }
             bricks[j] = std::move(bricks.back());
             bricks.pop_back();
+            nb_bricks--;
         } else {
             j++;
         }
+    }
+}
+
+void Game::update_status() {
+    if (nb_lives <= 0 && nb_balls == 0) {
+        status = LOST;
+    } else if (nb_bricks == 0) {
+        status = WON;
+    } else {
+        status = ONGOING;
     }
 }
