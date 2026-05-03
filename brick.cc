@@ -114,6 +114,12 @@ int RainbowBrick::get_type() const { return 0; }
 int BallBrick::get_type() const { return 1; }
 int SplitBrick::get_type() const { return 2; }
 
+
+Circle BallBrick::get_ball_in_brick() const {
+    return ball_in_brick;
+}
+
+
 //système de collision
 
 
@@ -139,11 +145,11 @@ void SplitBrick::hit() {
     }
 }
 
-std::vector<std::unique_ptr<Brick>> SplitBrick::get_children() const {
+std::vector<std::unique_ptr<Brick>> SplitBrick::get_children() {
     std::vector<std::unique_ptr<Brick>> result;
-    double new_side = (form.side - split_brick_gap) / 2;
-    if (new_side < brick_size_min) return result; 
-    
-    result.push_back(std::make_unique<SplitBrick>(...));
+    for (auto& child : splitBricks) {
+        result.push_back(std::move(child));  // Conversion implicite SplitBrick* → Brick*
+    }
+    splitBricks.clear();
     return result;
 }

@@ -22,6 +22,7 @@ public :
         : form({{x,y}, radius}), theta(asin(y / radius)) {}
     void draw() const;
     Circle& get_circle();
+    const Circle& get_circle() const;
     double get_theta() const { return theta; }
     void set_theta(double new_theta);
     bool validate_paddle() const;
