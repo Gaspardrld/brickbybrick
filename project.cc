@@ -1,17 +1,19 @@
-#include <iostream>
-#include "game.h"
+// project.cc
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
+#include <gtkmm/application.h>
+#include "gui.h"
 
 using namespace std;
 
-int main(int argc, char* argv[]) {
-    Game game;
-    if (argc != 2) {
-        return 1;
+int main(int argc, char *argv[])
+{
+    string file_name("");
+    if (argc > 1)
+    {
+        file_name = argv[1];
     }
-    
-    if (game.read(argv[1])) {
-        return 0;
-    } else {
-        return 1;
-    }
+    auto app = Gtk::Application::create();
+    return app->make_window_and_run<My_window>(1, argv, file_name);
 }

@@ -1,3 +1,7 @@
+// constants.h
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #ifndef CONSTANTS_H
 #define CONSTANTS_H
 
@@ -13,5 +17,5 @@ constexpr unsigned nb_bounce_max = 5; // to avoid infinite computation for a stu
 constexpr unsigned score_per_hit = 10;
 constexpr unsigned score_per_life = 300;
 constexpr unsigned dt = 25; // time interval between each step in milliseconds
-
+constexpr double line_width_default = 0.7;
 #endif

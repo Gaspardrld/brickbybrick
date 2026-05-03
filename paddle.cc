@@ -1,8 +1,16 @@
+// paddle.cc
+// Authors: Antoine Devilez & Gaspar Duarte Ribeiro
+// Version: 1.0
+
 #include <iostream>
 #include "paddle.h"
 #include "message.h"
 
-Circle Paddle::get_circle() const {
+void Paddle::set_theta(double new_theta) {
+    theta = new_theta;
+}
+
+Circle& Paddle::get_circle() {
     return form;
 }
 
@@ -22,3 +30,23 @@ bool Paddle::validate_paddle() const {
     }
     return true;
 }
+
+void Paddle::draw() const {
+    form.draw(BLACK, false, -theta, M_PI + theta);
+}
+
+void Paddle::move() {    
+    // limiter la vitesse
+    double delta = target - form.center.x;
+    if (abs(delta) > delta_norm_max) {
+        delta = (delta > 0) ? delta_norm_max : -delta_norm_max;
+    }
+    double new_x = form.center.x + delta;
+
+    form.center.x = new_x;
+}
+
+void Paddle::set_target(double x) {
+    target = x;
+}
+
