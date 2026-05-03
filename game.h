@@ -27,7 +27,6 @@ private:
         EXPECT_BALLS,
         FINISH,
     };
-    enum Status { ONGOING, WON, LOST };
     bool decode_line(const std::string& line);
     bool verif_score(std::istringstream& iss);
     bool verif_lives(std::istringstream& iss);
@@ -58,7 +57,7 @@ private:
 
 public:
     enum ReadResult { OK, FILE_NOT_FOUND, INVALID_CONTENT };
-
+    enum Status { ONGOING, WON, LOST };
     Game();
     ~Game();
     void reset();
