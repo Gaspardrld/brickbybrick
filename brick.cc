@@ -113,3 +113,37 @@ SplitBrick::SplitBrick(double x, double y, double side)
 int RainbowBrick::get_type() const { return 0; }
 int BallBrick::get_type() const { return 1; }
 int SplitBrick::get_type() const { return 2; }
+
+//système de collision
+
+
+//RainbowBrick
+void RainbowBrick::hit() {
+    hit_points--;
+    if (hit_points <= 0) living = false;
+}
+
+
+//BallBrick
+void BallBrick::hit() {
+    living = false;
+}
+
+
+//SplitBrick
+void SplitBrick::hit() {
+    if (splitBricks.empty()) {
+        living = false;
+    } else {
+        splitBricks.pop_back();
+    }
+}
+
+std::vector<std::unique_ptr<Brick>> SplitBrick::get_children() const {
+    std::vector<std::unique_ptr<Brick>> result;
+    double new_side = (form.side - split_brick_gap) / 2;
+    if (new_side < brick_size_min) return result; 
+    
+    result.push_back(std::make_unique<SplitBrick>(...));
+    return result;
+}

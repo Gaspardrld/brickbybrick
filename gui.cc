@@ -250,10 +250,8 @@ void My_window::dialog_response(int response, Gtk::FileChooserDialog *dialog)
     }
 }
 
-bool My_window::loop()
-{
-    if (loop_activated)
-    {
+bool My_window::loop() {
+    if (game.get_status() == Game::ONGOING) {
         game.step();
         update_infos();
         drawing.queue_draw();

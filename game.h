@@ -27,6 +27,7 @@ private:
         EXPECT_BALLS,
         FINISH,
     };
+    enum Status { ONGOING, WON, LOST };
     bool decode_line(const std::string& line);
     bool verif_score(std::istringstream& iss);
     bool verif_lives(std::istringstream& iss);
@@ -43,6 +44,7 @@ private:
     int nb_bricks;
     int nb_balls;
 
+    Status status = ONGOING;
     Paddle paddle;
     std::vector<Ball> balls;
     std::vector<std::unique_ptr<Brick>> bricks;
@@ -66,6 +68,7 @@ public:
     int get_nb_lives() const;
     int get_nb_bricks() const;
     int get_nb_balls() const;
+    Status get_status() const { return status; }
     void step();
     bool restart();
 
@@ -74,8 +77,19 @@ public:
     const std::vector<Ball>& get_balls() const;
 
     void new_ball();
+    void new_ball(double x, double y, double radius, double delta_x, double delta_y);
+    void hit_colliding_brick(Ball& ball);
+    void hit_colliding_ball(Ball& ball, Ball* other_ball);
+    void hit_colliding_paddle(Ball& ball);
+    void hit_collisions_wall(Ball& ball);
     void move_paddle();
     void set_target_paddle(double x);
+    bool has_collision(const Ball& ball) const;
+    void update_entities();
+    void update_status();
+
+    void lost();
+    void win();
 };
 
 #endif
