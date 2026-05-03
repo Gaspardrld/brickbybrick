@@ -28,6 +28,9 @@ public :
 
     void draw() const;
     void move();
+
+    void undo_move();
+    void set_delta(Point d);
 };
 
 #endif

@@ -15,6 +15,7 @@ private :
     Circle form;
     double target;
     double theta;
+    Point last_delta = {0, 0};
 public :
     Paddle() = default; 
     Paddle(double x, double y, double radius)
@@ -26,6 +27,7 @@ public :
     bool validate_paddle() const;
     void move();
     void set_target(double x);
+    Point get_last_delta() const { return last_delta; }
 };
 
 #endif
