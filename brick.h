@@ -22,7 +22,7 @@ public :
     const Square& get_form() const;
     virtual void draw() const = 0;
     virtual int get_type() const = 0;
-    virtual void hit(Point delta) = 0;
+    virtual void hit() = 0;
     virtual std::vector<std::unique_ptr<Brick>> get_children() const { return {}; }
 
     bool valid_brick() const;
@@ -41,7 +41,7 @@ public :
     void draw() const override;
     int get_type() const override;
 
-    void hit(Point delta) override;
+    void hit() override;
 };
 
 
@@ -55,23 +55,20 @@ public :
     void draw() const override;
     int get_type() const override;
     void create_ball_in_brick();
-    void hit(Point delta) override;
+    void hit() override;
 };
 
 
 class SplitBrick : public Brick {
 private :
     std::vector<std::unique_ptr<SplitBrick>> splitBricks; 
-    Point last_delta;
 public :
     SplitBrick(double x, double y, double side);
 
     void draw() const override;
-    void set_delta(Point delta);
-    void get_delta(Point delta) const;
     void draw(Color color) const;
     int get_type() const override;
-    void hit(Point delta) override;
+    void hit() override;
     std::vector<std::unique_ptr<Brick>> get_children() const override;
 };
 

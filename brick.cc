@@ -41,10 +41,6 @@ void BallBrick::create_ball_in_brick() {
     ball_in_brick = {{form.center.x, form.center.y}, new_ball_radius};
 }
 
-Circle BallBrick::get_ball_in_brick() const {
-    return ball_in_brick;
-}
-
 void RainbowBrick::draw() const {
     Color color;
     switch (hit_points) {
@@ -57,10 +53,6 @@ void RainbowBrick::draw() const {
         case 7: color = PURPLE; break;
     }
     form.draw(color);
-}
-
-void SplitBrick::set_delta(Point delta) {
-    last_delta = delta;
 }
 
 void SplitBrick::draw() const {
@@ -126,21 +118,20 @@ int SplitBrick::get_type() const { return 2; }
 
 
 //RainbowBrick
-void RainbowBrick::hit(Point delta) {
+void RainbowBrick::hit() {
     hit_points--;
     if (hit_points <= 0) living = false;
 }
 
 
 //BallBrick
-void BallBrick::hit(Point delta) {
+void BallBrick::hit() {
     living = false;
 }
 
 
 //SplitBrick
-void SplitBrick::hit(Point delta) {
-    set_delta(delta);
+void SplitBrick::hit() {
     if (splitBricks.empty()) {
         living = false;
     } else {
