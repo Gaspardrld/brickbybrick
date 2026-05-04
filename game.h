@@ -82,6 +82,7 @@ private:
     Status status = ONGOING;
     Paddle paddle;
     std::vector<Ball> balls;
+    std::vector<Ball> pending_balls;
     std::vector<std::unique_ptr<Brick>> bricks;
     Square arena = {{arena_size/2, arena_size/2}, arena_size};
     // polymorphisme pour éviter les problèmes de slicing

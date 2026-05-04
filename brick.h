@@ -27,6 +27,7 @@ public :
     virtual void hit() = 0;
     virtual std::vector<std::unique_ptr<Brick>> get_children() { return {}; }
     bool is_living() const { return living; }
+    bool valid_brick() const;
 };
 
 

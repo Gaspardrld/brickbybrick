@@ -82,17 +82,19 @@ void Game::reset() {
     nb_balls_read = 0;
 
     bricks.clear();
-    balls.clear(); 
+    balls.clear();
+    pending_balls.clear();
     paddle = Paddle();
 }
 
 Game::ReadResult Game::read(const char* file_name) {
-    std::string full_name = std::string("tests/") + file_name;
     last_file = file_name;
     reset();
-    ifstream file(full_name);
-    if (file.fail()) {
-        return FILE_NOT_FOUND;
+    ifstream file(file_name);
+    if (!file) {
+        std::string alt = std::string("tests/") + file_name;
+        file.open(alt);
+        if (!file) return FILE_NOT_FOUND;
     }
     string line;
     while (getline(file, line)) {
@@ -170,36 +172,39 @@ int Game::get_nb_balls() const {
 
 
 void Game::step() {
-    for (auto& ball : balls){
-        ball.move();
-        if (ball.get_circle().center.y < 0) {
-            ball = balls.back();
-            balls.pop_back();
+    size_t n = balls.size();
+    for (size_t i = 0; i < n; ) {
+        balls[i].move();
+        if (balls[i].get_circle().center.y < 0) {
             nb_lives--;
+            --n;
+            if (i < n) balls[i] = std::move(balls.back());
+            balls.pop_back();
+            if (i >= n) break;
+            continue;
         }
         unsigned int nb_rebonds = 0;
-        while (has_collision(ball)) {
-            //ANNULATION DU DEPLACEMENT !!!!!!!!!!!
+        while (has_collision(balls[i])) {
             if (nb_rebonds < nb_bounce_max) {
                 nb_rebonds++;
-                check_types_collisions(ball);
-            } 
+                check_types_collisions(balls[i]);
+            } else break;
         }
+        ++i;
     }
-    move_paddle();    
-    for (auto& ball : balls) {
-        if (circles_intersect(ball.get_circle(), paddle.get_circle())){
-            //DEPLACEMENT AVEC REBOND PADDLE -- pas compté dans nb_rebondd
-        }
-        while (has_collision(ball)) {
-            unsigned int nb_rebonds = 0;
-            // ANNULATION DU DEPLACEMENT !!!!!!!!!!!
+    move_paddle();
+    n = balls.size();
+    for (size_t i = 0; i < n; ++i) {
+        unsigned int nb_rebonds = 0;
+        while (has_collision(balls[i])) {
             if (nb_rebonds < nb_bounce_max) {
                 nb_rebonds++;
-                check_types_collisions(ball);
-            }
+                check_types_collisions(balls[i]);
+            } else break;
         }
     }
+    for (auto& b : pending_balls) balls.push_back(std::move(b));
+    pending_balls.clear();
     update_entities();
     update_status();
 }
@@ -267,7 +272,7 @@ void Game::new_ball(){
 void Game::new_ball(double x, double y, double radius, double delta_x, double delta_y){
     Ball new_b(x, y, radius, delta_x, delta_y);
     if (new_b.valid_ball()) {
-        balls.push_back(new_b);
+        pending_balls.push_back(new_b);
     }
 }
 
@@ -355,7 +360,7 @@ bool Game::verif_brick(istringstream& iss) {
     if (!(iss >> type >> x >> y >> side)) return false;
 
     auto new_brick = create_brick(type, x, y, side, iss);
-    if (!new_brick) return false;
+    if (!new_brick || !new_brick->valid_brick()) return false;
 
     for (size_t i = 0; i < bricks.size(); ++i) {
         if (squares_intersect(new_brick->get_form(),
@@ -436,7 +441,7 @@ bool Game::verif_balls(istringstream& iss) {
 bool Game::has_collision(const Ball& ball) const {
     if (!circle_in_square(ball.get_circle(), arena, true, true)) return true;
     for (const auto& brick : bricks)
-        if (circle_square_intersect(ball.get_circle(), brick->get_form())) {
+        if (brick->is_living() && circle_square_intersect(ball.get_circle(), brick->get_form())) {
              return true;
         }
     for (auto& other : balls)
@@ -456,17 +461,30 @@ void Game::check_types_collisions(Ball& ball) {
         }
     }
     hit_colliding_paddle(ball);
+    hit_collisions_wall(ball);
 }
 
 void Game::hit_colliding_brick(Ball& ball) {
     for (auto& brick : bricks) {
-        if (circle_square_intersect(ball.get_circle(), brick->get_form())) {
+        if (brick->is_living() && circle_square_intersect(ball.get_circle(), brick->get_form())) {
+            Circle bc = ball.get_circle();
+            Square sq = brick->get_form();
+            double half = sq.side / 2.0;
+            double overlap_x = half + bc.radius - std::abs(bc.center.x - sq.center.x);
+            double overlap_y = half + bc.radius - std::abs(bc.center.y - sq.center.y);
+
+            ball.undo_move();
+            Point d = ball.get_delta();
+            if (overlap_x < overlap_y) d.x = -d.x;
+            else                       d.y = -d.y;
+            ball.set_delta(d);
+            ball.move();
+
             brick->hit();
             if (brick->get_type() == 1) {
-                new_ball(brick->get_ball_in_brick().center.x, 
-                brick->get_ball_in_brick().center.y + ball_spawn_gap, 
-                new_ball_radius, ball.get_delta().x, 
-                ball.get_delta().y);
+                new_ball(brick->get_ball_in_brick().center.x,
+                         brick->get_ball_in_brick().center.y + ball_spawn_gap,
+                         new_ball_radius, ball.get_delta().x, ball.get_delta().y);
             }
             if (brick->get_type() == 2) {
                 for (auto& child : brick->get_children()) {
@@ -518,6 +536,7 @@ void Game::hit_colliding_ball(Ball& ball, Ball* other_ball) {
     }
     
     ball.set_delta(new_d);
+    ball.move();
 }
 
 void Game::hit_collisions_wall(Ball& ball) {
@@ -543,6 +562,7 @@ void Game::hit_collisions_wall(Ball& ball) {
     else if (hit_top) d.y = -d.y;
 
     ball.set_delta(d);
+    ball.move();
 }
 
 void Game::hit_colliding_paddle(Ball& ball) {
@@ -572,6 +592,7 @@ void Game::hit_colliding_paddle(Ball& ball) {
         new_d.y *= delta_norm_max / speed;
     }
     ball.set_delta(new_d);
+    ball.move();
 }
 
 
@@ -601,9 +622,9 @@ void Game::update_entities() {
 
 
 void Game::update_status() {
-    if (nb_lives <= 0 && nb_balls == 0) {
+    if (nb_lives <= 0 && balls.empty()) {
         lost();
-    } else if (nb_bricks == 0) {
+    } else if (bricks.empty()) {
         win();
     } else {
         status = ONGOING;
