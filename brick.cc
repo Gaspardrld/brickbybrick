@@ -138,11 +138,7 @@ void BallBrick::hit() {
 
 //SplitBrick
 void SplitBrick::hit() {
-    if (splitBricks.empty()) {
-        living = false;
-    } else {
-        splitBricks.pop_back();
-    }
+    living = false;
 }
 
 std::vector<std::unique_ptr<Brick>> SplitBrick::get_children() {

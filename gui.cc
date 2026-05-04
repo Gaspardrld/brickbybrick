@@ -257,6 +257,11 @@ bool My_window::loop() {
         drawing.queue_draw();
         return true;
     }
+    loop_activated = false;
+    state = READY;
+    update_buttons();
+    update_infos();
+    drawing.queue_draw();
     return false;
 }
 
