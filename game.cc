@@ -187,7 +187,6 @@ void Game::step() {
         while (has_collision(balls[i])) {
             if (nb_rebonds < nb_bounce_max) {
                 nb_rebonds++;
-                balls[i].undo_move();
                 check_types_collisions(balls[i]);
             } else break;
         }
@@ -466,135 +465,19 @@ void Game::check_types_collisions(Ball& ball) {
 }
 
 void Game::hit_colliding_brick(Ball& ball) {
-    for (auto& brick : bricks) {
-        if (brick->is_living() && circle_square_intersect(ball.get_circle(), 
-                                                            brick->get_form())) {
-            Circle bc = ball.get_circle();
-            Square sq = brick->get_form();
-            double half = sq.side / 2.0;
-            double overlap_x = half + bc.radius - std::abs(bc.center.x - sq.center.x);
-            double overlap_y = half + bc.radius - std::abs(bc.center.y - sq.center.y);
-
-            ball.undo_move();
-            Point d = ball.get_delta();
-            if (overlap_x < overlap_y) d.x = -d.x;
-            else                       d.y = -d.y;
-            ball.set_delta(d);
-            ball.move();
-
-            brick->hit();
-            if (brick->get_type() == 1) {
-                new_ball(brick->get_ball_in_brick().center.x,
-                         brick->get_ball_in_brick().center.y + ball_spawn_gap,
-                         new_ball_radius, ball.get_delta().x, ball.get_delta().y);
-            }
-            if (brick->get_type() == 2) {
-                for (auto& child : brick->get_children()) {
-                    bricks.push_back(std::move(child));
-                }
-            }
-            total_score += score_per_hit;
-            return;
-        }
-    }
+   
 }
 
 void Game::hit_colliding_ball(Ball& ball, Ball* other_ball) {
-    if (other_ball == nullptr) return;
-    if (!circles_intersect(ball.get_circle(), other_ball->get_circle())) return;
-    
-    // Annulation du déplacement
-    ball.undo_move();
-    
-    // Vecteur normal unitaire (de other vers ball)
-    Point cb = ball.get_circle().center;
-    Point co = other_ball->get_circle().center;
-    Point n = { cb.x - co.x, cb.y - co.y };
-    double len = norm(n);
-    if (len < epsil_zero) return;  // Évite division par 0
-    n.x /= len;
-    n.y /= len;
-    
-    // Projections des deltas sur la normale (vitesses nominales)
-    Point v = ball.get_delta();
-    Point v_autre = other_ball->get_delta();
-    double vn = dot_product(v, n);
-    double v_autre_n = dot_product(v_autre, n);
-    
-    // Calcul de l'impulsion selon la formule de la spec
-    double r = ball.get_circle().radius;
-    double r_autre = other_ball->get_circle().radius;
-    double impulsion = (-vn + v_autre_n) * (2.0 * r_autre * r_autre) 
-                     / (r * r + r_autre * r_autre);
-    
-    // Nouveau delta = delta + impulsion * normale
-    Point new_d = { v.x + impulsion * n.x, v.y + impulsion * n.y };
-    
-    // Bridage à delta_norm_max pour éviter l'effet tunnel
-    double speed = norm(new_d);
-    if (speed > delta_norm_max) {
-        new_d.x *= delta_norm_max / speed;
-        new_d.y *= delta_norm_max / speed;
-    }
-    
-    ball.set_delta(new_d);
-    ball.move();
+  
 }
 
 void Game::hit_collisions_wall(Ball& ball) {
-    Point d = ball.get_delta();
-    ball.undo_move();
-
-    Point c = ball.get_circle().center;
-    double r = ball.get_circle().radius;
-    Point fut = { c.x + d.x, c.y + d.y };
-
-    bool hit_left   = (fut.x < r + epsil_zero);
-    bool hit_right  = (fut.x > arena_size - r - epsil_zero);
-    bool hit_top    = (fut.y > arena_size - r - epsil_zero);
-    bool hit_x = hit_left || hit_right;
-
-    if (hit_x && hit_top) {
-        double dist_x = std::abs(fut.x - arena_size / 2);
-        double dist_y = std::abs(fut.y - arena_size / 2);
-        if (dist_x > dist_y) d.x = -d.x;
-        else d.y = -d.y;
-    }
-    else if (hit_x) d.x = -d.x;
-    else if (hit_top) d.y = -d.y;
-
-    ball.set_delta(d);
-    ball.move();
+ 
 }
 
 void Game::hit_colliding_paddle(Ball& ball) {
-    if (!circles_intersect(ball.get_circle(), paddle.get_circle())) return;
-
-    ball.undo_move();
-
-    Point cb = ball.get_circle().center;
-    Point cp = paddle.get_circle().center;
-    Point n = { cb.x - cp.x, cb.y - cp.y };
-    double len = norm(n);
-    if (len < epsil_zero) return;
-    n.x /= len; n.y /= len;
-
-    Point v = ball.get_delta();
-    Point vp = paddle.get_last_delta();   // à ajouter dans Paddle
-
-    double v_n  = dot_product(v,  n);
-    double vp_n = dot_product(vp, n);
-
-    double imp = 2.0 * (-v_n + vp_n);
-    Point new_d = { v.x + imp * n.x, v.y + imp * n.y };
-
-    double speed = norm(new_d);
-    if (speed > delta_norm_max) {
-        new_d.x *= delta_norm_max / speed;
-        new_d.y *= delta_norm_max / speed;
-    }
-    ball.set_delta(new_d);
-    ball.move();
+ 
 }
 
 
