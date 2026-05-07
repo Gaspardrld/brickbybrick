@@ -469,7 +469,38 @@ void Game::hit_colliding_brick(Ball& ball) {
 }
 
 void Game::hit_colliding_ball(Ball& ball, Ball* other_ball) {
-  
+    
+    Point centre_ball = ball.get_circle().center;
+    Point centre_other = other_ball->get_circle().center;
+    double r_ball = ball.get_circle().radius;
+    double r_other = other_ball->get_circle().radius;
+    Point delta_ball = ball.get_delta();
+    Point delta_other = other_ball->get_delta();
+
+    Point n = { centre_other.x - centre_ball.x,centre_other.y - centre_ball.y };
+    double n_norm = norm(n);
+    if (n_norm < epsil_zero) {return;}
+    n.x = n.x / n_norm;
+    n.y = n.y / n_norm;
+
+    double v_n = dot_product(delta_ball, n);
+    double v_other_n = dot_product(delta_other, n);
+
+    double impulsion = (-v_n + v_other_n)*
+                        2 * r_other * r_other / (r_ball * r_ball + r_other * r_other);
+
+    Point new_delta;
+    new_delta.x = delta_ball.x + impulsion * n.x;
+    new_delta.y = delta_ball.y + impulsion * n.y;
+    double new_norm = norm(new_delta);
+    if (new_norm > delta_norm_max){
+        double factor = delta_norm_max / new_norm;
+        new_delta.x *= factor;
+        new_delta.y *= factor;
+    }
+    
+    ball.set_delta(new_delta);
+
 }
 
 void Game::hit_collisions_wall(Ball& ball) {
