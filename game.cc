@@ -464,8 +464,20 @@ void Game::check_types_collisions(Ball& ball) {
     hit_collisions_wall(ball);
 }
 
-void Game::hit_colliding_brick(Ball& ball) {
-   
+void Game::hit_colliding_brick(Ball& ball, Brick& brick) {
+    real_distance = distance(ball.get_circle().center, brick.get_form().center);
+    Point bound_diff = closest_point_on_square(ball.get_circle().center, 
+                                                                brick.get_form());
+    bound_distance = distance(ball.get_circle().center, bound_diff);
+    direction_vector = {ball.get_circle().center.x - bound_diff.x, 
+                        ball.get_circle().center.y - bound_diff.y};
+    double n2 = norm_squared(direction_vector);
+    if (n2 >= epsil_zero * epsil_zero) {
+        double k = 2.0 * dot_product(ball.get_delta(), direction_vector) / n2;
+        ball.set_delta({ball.get_delta().x - k * direction_vector.x,
+                        ball.get_delta().y - k * direction_vector.y});
+    }
+    call_behavior(brick, ball);
 }
 
 void Game::hit_colliding_ball(Ball& ball, Ball* other_ball) {
@@ -504,7 +516,22 @@ void Game::hit_colliding_ball(Ball& ball, Ball* other_ball) {
 }
 
 void Game::hit_collisions_wall(Ball& ball) {
- 
+    bool vertical_check =  ball.get_circle().center.y - ball.get_circle().radius < 0
+                or ball.get_circle().center.y + ball.get_circle().radius > arena_size;
+    bool horizontal_check = ball.get_circle().center.x - ball.get_circle().radius < 0
+                or ball.get_circle().center.x + ball.get_circle().radius > arena_size;
+    if (vertical_check and horizontal_check) {
+        double dx = std::abs(ball.get_circle().center.x - arena_size / 2.0);
+        double dy = std::abs(ball.get_circle().center.y - arena_size / 2.0);
+        if (dx > dy)
+            ball.set_delta({-ball.get_delta().x,  ball.get_delta().y});
+        else
+            ball.set_delta({ ball.get_delta().x, -ball.get_delta().y});
+    } else if (vertical_check) {
+        ball.set_delta({ball.get_delta().x, -ball.get_delta().y});
+    } else if (horizontal_check) {
+        ball.set_delta({-ball.get_delta().x, ball.get_delta().y});
+    }
 }
 
 void Game::hit_colliding_paddle(Ball& ball) {
@@ -544,6 +571,22 @@ void Game::update_status() {
         win();
     } else {
         status = ONGOING;
+    }
+}
+
+
+void Game::call_behavior(Brick& brick, const Ball& ball) {
+    brick.hit();
+    if (brick.get_type() == 1) {
+        new_ball(brick.get_ball_in_brick().center.x, brick.get_ball_in_brick().center.y, 
+                brick.get_ball_in_brick().radius, ball.get_delta().x, ball.get_delta().y);
+    }
+    else if (brick.get_type() == 2) {
+        auto children = brick.get_children();
+        for (auto& child : children) {
+            bricks.push_back(std::move(child));
+            nb_bricks++;
+        }
     }
 }
 

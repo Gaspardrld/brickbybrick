@@ -42,6 +42,8 @@ public:
     void hit_colliding_ball(Ball& ball, Ball* other_ball);
     void hit_colliding_paddle(Ball& ball);
     void hit_collisions_wall(Ball& ball);
+
+    void call_behavior(Brick& brick, Ball& ball);
     void move_paddle();
     void set_target_paddle(double x);
     bool has_collision(const Ball& ball) const;
