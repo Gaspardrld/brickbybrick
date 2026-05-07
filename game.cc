@@ -179,9 +179,8 @@ void Game::step() {
         }
         int nb_rebonds = 0;
         while (has_collision(ball)) {
-            //ANNULATION DU DEPLACEMENT !!!!!!!!!!!
+            ball.undo_move();
             if (nb_rebonds < nb_bounce_max) {
-                // DEPLACEMENT AVEC REBOND !!!!!!!!!!!
                 nb_rebonds++;
                 hit_colliding_brick(ball);
                 hit_colliding_ball(ball);
