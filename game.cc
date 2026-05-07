@@ -187,6 +187,7 @@ void Game::step() {
         while (has_collision(balls[i])) {
             if (nb_rebonds < nb_bounce_max) {
                 nb_rebonds++;
+                balls[i].undo_move();
                 check_types_collisions(balls[i]);
             } else break;
         }
@@ -466,7 +467,8 @@ void Game::check_types_collisions(Ball& ball) {
 
 void Game::hit_colliding_brick(Ball& ball) {
     for (auto& brick : bricks) {
-        if (brick->is_living() && circle_square_intersect(ball.get_circle(), brick->get_form())) {
+        if (brick->is_living() && circle_square_intersect(ball.get_circle(), 
+                                                            brick->get_form())) {
             Circle bc = ball.get_circle();
             Square sq = brick->get_form();
             double half = sq.side / 2.0;
