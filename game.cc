@@ -189,7 +189,12 @@ void Game::step() {
             if (nb_rebonds < nb_bounce_max) {
                 nb_rebonds++;
                 check_types_collisions(balls[i]);
-            } else break;
+                balls[i].undo_move();
+                balls[i].move();
+            } else {
+                balls[i].undo_move();
+                break;
+            }
         }
         ++i;
     }
@@ -201,7 +206,12 @@ void Game::step() {
             if (nb_rebonds < nb_bounce_max) {
                 nb_rebonds++;
                 check_types_collisions(balls[i]);
-            } else break;
+                balls[i].undo_move();
+                balls[i].move();
+            } else {
+                balls[i].undo_move();
+                break;
+            }
         }
     }
     for (auto& b : pending_balls) balls.push_back(std::move(b));

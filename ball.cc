@@ -44,12 +44,12 @@ void Ball::draw() const {
 }
  
 void Ball::move() {
+    pre_move_center = form.center;
     form.center.x += delta.x;
     form.center.y += delta.y;
 }
 
 void Ball::undo_move() {
-    form.center.x -= delta.x;
-    form.center.y -= delta.y;
+    form.center = pre_move_center;
 }
 void Ball::set_delta(Point d) { delta = d; }
