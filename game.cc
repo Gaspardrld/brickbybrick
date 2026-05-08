@@ -609,6 +609,7 @@ void Game::update_status() {
 
 
 void Game::call_behavior(Brick& brick, const Ball& ball) {
+    total_score += score_per_hit;
     brick.hit();
     if (brick.get_type() == BALL_BRICK) {
         new_ball(brick.get_ball_in_brick().center.x,brick.get_ball_in_brick().center.y, 
@@ -626,7 +627,6 @@ void Game::call_behavior(Brick& brick, const Ball& ball) {
 
 void Game::lost() {
     status = LOST;
-    total_score = 0;
     message::lost();
 }
 

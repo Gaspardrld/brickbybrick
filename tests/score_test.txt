@@ -1,0 +1,18 @@
+# test scoring : balle rebondit verticalement entre mur du haut et brique 7HP
+# attendu : +10 par rebond sur la brique (7 fois) puis brique detruite
+# score
+0
+
+# lives
+3
+
+# paddle
+50 -16 20
+
+# bricks
+1
+0 50 30 10 7
+
+# balls
+1
+50 70 1 0 1
