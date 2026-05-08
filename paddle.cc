@@ -10,6 +10,10 @@ void Paddle::set_theta(double new_theta) {
     theta = new_theta;
 }
 
+void Paddle::set_x(double x) {
+    form.center.x = x;
+}
+
 Circle& Paddle::get_circle() {
     return form;
 }
@@ -54,3 +58,9 @@ void Paddle::set_target(double x) {
     target = x;
 }
 
+void Paddle::clamp_to_arena() {
+    double half_width = circle.radius * cos(theta);
+    circle.center.x = std::max(half_width + epsil_zero,
+                               std::min(arena_size - half_width - epsil_zero,
+                                        circle.center.x));
+}
