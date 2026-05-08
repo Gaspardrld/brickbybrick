@@ -535,7 +535,35 @@ void Game::hit_collisions_wall(Ball& ball) {
 }
 
 void Game::hit_colliding_paddle(Ball& ball) {
- 
+    Point centre_ball = ball.get_circle().center;
+    Point centre_paddle = paddle.get_circle().center;
+    double r_ball = ball.get_circle().radius;
+    Point delta_ball = ball.get_delta();
+    Point delta_paddle = paddle.get_last_delta();
+
+    Point n = { centre_paddle.x - centre_ball.x, centre_paddle.y - centre_ball.y };
+    double n_norm = norm(n);
+    
+    if (n_norm < epsil_zero) return;
+    n.x = n.x / n_norm;
+    n.y = n.y / n_norm;
+    double v_n        = dot_product(delta_ball,   n);
+    double v_paddle_n = dot_product(delta_paddle, n);
+    double impulsion  = 2 * (-v_n + v_paddle_n);
+
+    Point new_delta;
+    new_delta.x = delta_ball.x + impulsion * n.x;
+    new_delta.y = delta_ball.y + impulsion * n.y;
+
+    double new_norm = norm(new_delta);
+    if (new_norm > delta_norm_max){
+        double factor = delta_norm_max / new_norm;
+        new_delta.x = new_delta.x * factor;
+        new_delta.y = new_delta.y * factor;
+    }
+    
+    ball.set_delta(new_delta);
+
 }
 
 
