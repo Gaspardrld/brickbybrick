@@ -38,12 +38,12 @@ public:
 
     void new_ball();
     void new_ball(double x, double y, double radius, double delta_x, double delta_y);
-    void hit_colliding_brick(Ball& ball);
+    void hit_colliding_brick(Ball& ball, Brick& brick);
     void hit_colliding_ball(Ball& ball, Ball* other_ball);
     void hit_colliding_paddle(Ball& ball);
     void hit_collisions_wall(Ball& ball);
 
-    void call_behavior(Brick& brick, Ball& ball);
+    void call_behavior(Brick& brick, const Ball& ball);
     void move_paddle();
     void set_target_paddle(double x);
     bool has_collision(const Ball& ball) const;

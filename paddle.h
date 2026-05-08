@@ -15,7 +15,7 @@ private :
     Circle form;
     double target;
     double theta;
-    Point last_delta = {0, 0};
+    Point last_delta = {0.0, 0.0};
 public :
     Paddle() = default; 
     Paddle(double x, double y, double radius)
