@@ -450,7 +450,7 @@ void Game::check_types_collisions(Ball& ball) {
     for (auto& brick : bricks) {
         if (brick->is_living() && circle_square_intersect(ball.get_circle(), 
                                                             brick->get_form())) {
-            hit_colliding_brick(ball, brick);
+            hit_colliding_brick(ball, *brick);
             return;
         }
     }
@@ -536,7 +536,6 @@ void Game::hit_collisions_wall(Ball& ball) {
 void Game::hit_colliding_paddle(Ball& ball) {
     Point centre_ball = ball.get_circle().center;
     Point centre_paddle = paddle.get_circle().center;
-    double r_ball = ball.get_circle().radius;
     Point delta_ball = ball.get_delta();
     Point delta_paddle = paddle.get_last_delta();
 

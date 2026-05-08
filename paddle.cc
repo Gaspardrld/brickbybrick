@@ -52,7 +52,7 @@ void Paddle::move() {
     double new_x = form.center.x + delta;
 
     form.center.x = new_x;
-    last_delta = { dx, 0.0 }; 
+    last_delta.x = dx;  
 }
 
 void Paddle::set_target(double x) {
@@ -60,8 +60,8 @@ void Paddle::set_target(double x) {
 }
 
 void Paddle::clamp_to_arena() {
-    double half_width = circle.radius * cos(theta);
-    circle.center.x = std::max(half_width + epsil_zero,
-                               std::min(arena_size - half_width - epsil_zero,
-                                        circle.center.x));
+    double half_width = form.radius * cos(theta);
+    form.center.x = std::max(half_width + epsil_zero,
+                             std::min(arena_size - half_width - epsil_zero,
+                                      form.center.x));
 }
