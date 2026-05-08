@@ -52,7 +52,7 @@ void Paddle::move() {
     double new_x = form.center.x + delta;
 
     form.center.x = new_x;
-    last_delta.x = dx;  
+    last_delta.x = delta;  
 }
 
 void Paddle::set_target(double x) {
