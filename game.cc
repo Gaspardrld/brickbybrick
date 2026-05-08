@@ -602,8 +602,9 @@ void Game::update_status() {
 void Game::call_behavior(Brick& brick, const Ball& ball) {
     brick.hit();
     if (brick.get_type() == BALL_BRICK) {
-        new_ball(brick.get_ball_in_brick().center.x, brick.get_ball_in_brick().center.y, 
-                brick.get_ball_in_brick().radius, ball.get_delta().x, ball.get_delta().y);
+        new_ball(brick.get_ball_in_brick().center.x,brick.get_ball_in_brick().center.y, 
+                brick.get_ball_in_brick().radius,
+                ball.get_delta().x, ball.get_delta().y);
     }
     else if (brick.get_type() == SPLIT_BRICK) {
         auto children = brick.get_children();
