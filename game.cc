@@ -645,7 +645,6 @@ void Game::call_behavior(Brick& brick, const Ball& ball) {
 
 void Game::lost() {
     status = LOST;
-    total_score = 0;
     message::lost();
 }
 
