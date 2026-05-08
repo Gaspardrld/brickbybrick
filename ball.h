@@ -13,6 +13,7 @@ class Ball {
 private :
     Circle form;
     Point delta;
+    Point pre_move_center;
 
     double norm_delta() const; // mise en private car uniquement pour valid ball
     double norm_delta_squared() const;  // idem que norm_Delta
