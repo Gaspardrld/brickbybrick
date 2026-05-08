@@ -144,7 +144,7 @@ void SplitBrick::hit() {
 std::vector<std::unique_ptr<Brick>> SplitBrick::get_children() {
     std::vector<std::unique_ptr<Brick>> result;
     for (auto& child : splitBricks) {
-        result.push_back(std::move(child));  // Conversion implicite SplitBrick* → Brick*
+        result.push_back(std::move(child)); 
     }
     splitBricks.clear();
     return result;
