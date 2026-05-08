@@ -192,7 +192,6 @@ void Game::step() {
                 balls[i].undo_move();
                 balls[i].move();
             } else {
-                balls[i].undo_move();
                 break;
             }
         }
@@ -209,7 +208,6 @@ void Game::step() {
                 balls[i].undo_move();
                 balls[i].move();
             } else {
-                balls[i].undo_move();
                 break;
             }
         }
@@ -458,19 +456,21 @@ bool Game::has_collision(const Ball& ball) const {
 
 void Game::check_types_collisions(Ball& ball) {
     for (auto& brick : bricks) {
-        if (brick->is_living() && circle_square_intersect(ball.get_circle(), 
+        if (brick->is_living() && circle_square_intersect(ball.get_circle(),
                                                             brick->get_form())) {
             hit_colliding_brick(ball, *brick);
             return;
         }
     }
     for (auto& other : balls) {
-        if (&other != &ball) {
+        if (&other != &ball && circles_intersect(ball.get_circle(), other.get_circle())) {
             hit_colliding_ball(ball, &other);
+            return;
         }
     }
     if (circles_intersect(ball.get_circle(), paddle.get_circle())) {
         hit_colliding_paddle(ball);
+        return;
     }
     hit_collisions_wall(ball);
 }
