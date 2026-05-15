@@ -15,19 +15,22 @@ private :
     Circle form;
     double target;
     double theta;
-    Point last_delta = {0, 0};
+    Point last_delta = {0.0, 0.0};
 public :
     Paddle() = default; 
     Paddle(double x, double y, double radius)
         : form({{x,y}, radius}), theta(asin(y / radius)) {}
     void draw() const;
     Circle& get_circle();
+    const Circle& get_circle() const;
     double get_theta() const { return theta; }
     void set_theta(double new_theta);
     bool validate_paddle() const;
     void move();
     void set_target(double x);
     Point get_last_delta() const { return last_delta; }
+    void set_x  (double x);
+    void clamp_to_arena();
 };
 
 #endif
