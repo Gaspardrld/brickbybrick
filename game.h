@@ -51,6 +51,7 @@ public:
     void update_entities();
     void update_status();
     void check_types_collisions(Ball& ball);
+    bool collision_paddle(Ball& ball);
     void lost();
     void win();
 

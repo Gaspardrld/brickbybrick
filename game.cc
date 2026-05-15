@@ -188,7 +188,7 @@ void Game::step() {
             if (nb_rebonds < nb_bounce_max) {
                 nb_rebonds++;
                 check_types_collisions(balls[i]);
-                if collision_paddle(balls[i]) {
+                if (collision_paddle(balls[i])) {
                     nb_rebonds = 0;
                 }
                 balls[i].undo_move();
@@ -208,8 +208,14 @@ void Game::step() {
             if (nb_rebonds < nb_bounce_max) {
                 nb_rebonds++;
                 check_types_collisions(balls[i]);
+                if (collision_paddle(balls[i])) {
+                    nb_rebonds = 0;
+                } 
                 balls[i].undo_move();
                 balls[i].move();
+            } else {
+                balls[i].undo_move();
+                break;
             }
         }
     }
@@ -272,9 +278,7 @@ void Game::new_ball(){
 
 void Game::new_ball(double x, double y, double radius, double delta_x, double delta_y){
     Ball new_b(x, y, radius, delta_x, delta_y);
-    if (new_b.valid_ball()) {
-        pending_balls.push_back(new_b);
-    }
+    pending_balls.push_back(new_b);
 }
 
 
@@ -472,11 +476,13 @@ void Game::check_types_collisions(Ball& ball) {
     hit_collisions_wall(ball);
 }
 
-void Game::collision_paddle(Ball& ball)
+bool Game::collision_paddle(Ball& ball) {
     if (circles_intersect(ball.get_circle(), paddle.get_circle())) {
         hit_colliding_paddle(ball);
-        return;
+        return true;
     }
+    return false;
+}
 
 void Game::hit_colliding_brick(Ball& ball, Brick& brick) {
     Point closest = closest_point_on_square(ball.get_circle().center, brick.get_form());
