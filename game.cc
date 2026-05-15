@@ -569,6 +569,11 @@ void Game::hit_collisions_wall(Ball& ball) {
 }
 
 void Game::hit_colliding_paddle(Ball& ball) {
+    double v_n        = dot_product(delta_ball,   n);
+    double v_paddle_n = dot_product(delta_paddle, n);
+    if (v_n - v_paddle_n <= 0) return;
+    double impulsion = 2 * (-v_n + v_paddle_n);
+    
     Point centre_ball = ball.get_circle().center;
     Point centre_paddle = paddle.get_circle().center;
     Point delta_ball = ball.get_delta();
