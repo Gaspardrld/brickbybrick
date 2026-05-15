@@ -189,7 +189,7 @@ void Game::step() {
                 nb_rebonds++;
                 check_types_collisions(balls[i]);
                 if (collision_paddle(balls[i])) {
-                    nb_rebonds = 0;
+                    nb_rebonds--;
                 }
                 balls[i].undo_move();
                 balls[i].move();
@@ -209,7 +209,7 @@ void Game::step() {
                 nb_rebonds++;
                 check_types_collisions(balls[i]);
                 if (collision_paddle(balls[i])) {
-                    nb_rebonds = 0;
+                    nb_rebonds--;
                 } 
                 balls[i].undo_move();
                 balls[i].move();
