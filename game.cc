@@ -615,10 +615,10 @@ void Game::update_entities() {
 
 
 void Game::update_status() {
-    if (nb_lives <= 0 && balls.empty()) {
-        lost();
-    } else if (bricks.empty()) {
+    if (bricks.empty()) {
         win();
+    } else if (nb_lives <= 0 && balls.empty()) {
+        lost();
     } else {
         status = ONGOING;
     }
