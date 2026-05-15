@@ -177,7 +177,6 @@ void Game::step() {
     for (size_t i = 0; i < n; ) {
         balls[i].move();
         if (balls[i].get_circle().center.y < 0) {
-            nb_lives--;
             --n;
             if (i < n) balls[i] = std::move(balls.back());
             balls.pop_back();

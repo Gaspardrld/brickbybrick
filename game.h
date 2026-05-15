@@ -38,6 +38,7 @@ public:
 
     void new_ball();
     void new_ball(double x, double y, double radius, double delta_x, double delta_y);
+    void consume_life() { if (nb_lives > 0) --nb_lives; }
     void hit_colliding_brick(Ball& ball, Brick& brick);
     void hit_colliding_ball(Ball& ball, Ball& other_ball);
     void hit_colliding_paddle(Ball& ball);
