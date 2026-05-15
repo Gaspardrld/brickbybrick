@@ -339,6 +339,7 @@ void My_window::on_drawing_left_click(int n_press, double x, double y)
 {
     if (n_press == 1 && game.get_nb_lives() > 0 and game.get_nb_balls() == 0) {
         game.new_ball();
+        game.consume_life();
         update_infos();
     }
     drawing.queue_draw(); // TODO
