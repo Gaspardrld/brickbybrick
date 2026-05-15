@@ -188,6 +188,9 @@ void Game::step() {
             if (nb_rebonds < nb_bounce_max) {
                 nb_rebonds++;
                 check_types_collisions(balls[i]);
+                if collision_paddle(balls[i]) {
+                    nb_rebonds = 0;
+                }
                 balls[i].undo_move();
                 balls[i].move();
             } else {
@@ -207,9 +210,6 @@ void Game::step() {
                 check_types_collisions(balls[i]);
                 balls[i].undo_move();
                 balls[i].move();
-            } else {
-                balls[i].undo_move();
-                break;
             }
         }
     }
@@ -469,12 +469,14 @@ void Game::check_types_collisions(Ball& ball) {
             return;
         }
     }
+    hit_collisions_wall(ball);
+}
+
+void Game::collision_paddle(Ball& ball)
     if (circles_intersect(ball.get_circle(), paddle.get_circle())) {
         hit_colliding_paddle(ball);
         return;
     }
-    hit_collisions_wall(ball);
-}
 
 void Game::hit_colliding_brick(Ball& ball, Brick& brick) {
     Point closest = closest_point_on_square(ball.get_circle().center, brick.get_form());
