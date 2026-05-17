@@ -79,6 +79,17 @@ bool circles_intersect(const Circle& c1, const Circle& c2, bool use_tolerance) {
     return dist<(c1.radius + c2.radius + tol);
 }
 
+
+bool is_circle_in_circle(const Circle& c1, const Circle& c2, 
+                                            bool use_tolerance)
+{
+    double tol = use_tolerance ? epsil_zero : 0.0;
+    double dist_centers = distance(c1.center, c2.center);
+    if (c1.radius > c2.radius + tol) return false;
+    return dist_centers + c1.radius <= c2.radius + tol;
+}
+
+
 bool circle_square_intersect(const Circle& c, const Square& s, bool use_tolerance) {
     double tol = use_tolerance ? epsil_zero : 0.0;
     double radius_with_tol = c.radius + tol;

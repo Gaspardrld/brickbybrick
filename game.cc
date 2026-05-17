@@ -451,7 +451,8 @@ bool Game::has_collision(const Ball& ball) const {
                                                         other.get_circle())) {
             return true;
         }
-    if (circles_intersect(ball.get_circle(), paddle.get_circle())) return true;
+    if (circles_intersect(ball.get_circle(), paddle.get_circle()) or
+            is_circle_in_circle(ball.get_circle(), paddle.get_circle())) return true;
     return false;
 }
 
