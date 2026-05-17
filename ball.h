@@ -34,6 +34,7 @@ public :
     bool is_living() const { return living; }
     void undo_move();
     void set_delta(Point d);
+    void set_center(Point c) { form.center = c; }
 };
 
 #endif
