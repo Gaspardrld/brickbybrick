@@ -86,7 +86,7 @@ void Game::reset() {
     balls.clear();
     pending_balls.clear();
     paddle = Paddle();
-    paddle.set_x(arena_size/2.0);
+    paddle.set_target(arena_size/2.0);
 }
 
 Game::ReadResult Game::read(const char* file_name) {

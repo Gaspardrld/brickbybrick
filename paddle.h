@@ -13,7 +13,7 @@
 class Paddle {
 private :
     Circle form;
-    double target;
+    double target = arena_size/2.0;
     double theta;
     Point last_delta = {0.0, 0.0};
 public :
