@@ -223,14 +223,18 @@ void Game::step() {
 void Game::move_paddle() {
     double x_previous = paddle.get_circle().center.x;
     paddle.move();
-    
+
     for (auto& brick : bricks) {
         if (circle_square_intersect(paddle.get_circle(), brick->get_form())) {
             paddle.set_x(x_previous);
+            paddle.set_last_delta({0.0, 0.0});
             return;
         }
     }
     paddle.clamp_to_arena();
+    // last_delta = déplacement RÉEL après clamp (sinon les balles voient une
+    // vitesse paddle inexistante et le rebond va dans le mauvais sens)
+    paddle.set_last_delta({paddle.get_circle().center.x - x_previous, 0.0});
 }
 
 
@@ -587,7 +591,6 @@ void Game::hit_colliding_paddle(Ball& ball) {
         new_delta.y *= factor;
     }
     ball.set_delta(new_delta);
-
 
     // Ejection : pousser la balle au-delà du cercle paddle + epsil_zero
     // (sinon circles_intersect re-détecte une collision via sa tolérance)
