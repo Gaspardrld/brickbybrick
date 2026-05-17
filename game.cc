@@ -589,8 +589,11 @@ void Game::hit_colliding_paddle(Ball& ball) {
     ball.set_delta(new_delta);
 
 
-    double depth = paddle.get_circle().radius + ball.get_circle().radius - n_norm;
-    if (depth > 0) {
+    // Ejection : pousser la balle au-delà du cercle paddle + epsil_zero
+    // (sinon circles_intersect re-détecte une collision via sa tolérance)
+    double sum_r = paddle.get_circle().radius + ball.get_circle().radius;
+    if (n_norm < sum_r) {
+        double depth = sum_r - n_norm + epsil_zero;
         ball.set_center({ centre_ball.x - depth * n.x,
                           centre_ball.y - depth * n.y });
     }
