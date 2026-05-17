@@ -477,6 +477,7 @@ void Game::check_types_collisions(Ball& ball) {
 }
 
 void Game::hit_colliding_brick(Ball& ball, Brick& brick) {
+    call_behavior(brick, ball);
     Point closest = closest_point_on_square(ball.get_circle().center, brick.get_form());
     Point direction_vector = {ball.get_circle().center.x - closest.x,
                               ball.get_circle().center.y - closest.y};
@@ -495,7 +496,6 @@ void Game::hit_colliding_brick(Ball& ball, Brick& brick) {
         else
             ball.set_delta({ball.get_delta().x, -ball.get_delta().y});
     }
-    call_behavior(brick, ball);
 }
 
 void Game::hit_colliding_ball(Ball& ball, Ball& other_ball) {
