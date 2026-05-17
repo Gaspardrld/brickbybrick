@@ -491,14 +491,13 @@ void Game::hit_colliding_brick(Ball& ball, Brick& brick) {
         ball.set_delta({ball.get_delta().x - k * direction_vector.x,
                         ball.get_delta().y - k * direction_vector.y});
     } else {
-        // ball center is inside brick (tunnel effect): reflect off closest face
-        Point diff = {ball.get_circle().center.x - brick.get_form().center.x,
-                      ball.get_circle().center.y - brick.get_form().center.y};
-        double half = brick.get_form().side / 2.0;
-        if (std::abs(diff.x / half) > std::abs(diff.y / half))
-            ball.set_delta({-ball.get_delta().x, ball.get_delta().y});
+        // Ball center on/inside brick: reverse the dominant velocity component
+        // (= the axis along which ball entered the brick most directly)
+        Point d = ball.get_delta();
+        if (std::abs(d.x) > std::abs(d.y))
+            ball.set_delta({-d.x, d.y});
         else
-            ball.set_delta({ball.get_delta().x, -ball.get_delta().y});
+            ball.set_delta({d.x, -d.y});
     }
 }
 
