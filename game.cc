@@ -564,8 +564,9 @@ void Game::hit_colliding_paddle(Ball& ball) {
     Point centre_ball = ball.get_circle().center;
     Point centre_paddle = paddle.get_circle().center;
     Point delta_ball = ball.get_delta();
-    Point delta_paddle = paddle.get_last_delta();
-
+    Point delta_paddle = {paddle.get_last_delta()};
+    cout << "DELTA PADDLE X : " << delta_paddle.x<<" DELTA PADDLE Y : " << delta_paddle.y <<endl;
+    cout <<"DELTA BALLE X : " << delta_ball.x<<" DELTA BALLE Y : " << delta_ball.y <<endl;
     Point n = { centre_paddle.x - centre_ball.x, centre_paddle.y - centre_ball.y };
     double n_norm = norm(n);
 
@@ -586,7 +587,7 @@ void Game::hit_colliding_paddle(Ball& ball) {
         new_delta.x = new_delta.x * factor;
         new_delta.y = new_delta.y * factor;
     }
-
+    cout <<"NEW BALLE X : " << new_delta.x <<" NEW BALLE Y : " << new_delta.y <<endl << endl;
     ball.set_delta(new_delta);
 }
 
