@@ -18,7 +18,7 @@
 class Game {
 public:
     enum ReadResult { OK, FILE_NOT_FOUND, INVALID_CONTENT };
-    enum Status { ONGOING, WON, LOST };
+    enum Status { ONGOING, STOPPED };
     Game();
     ~Game();
     void reset();

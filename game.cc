@@ -173,6 +173,7 @@ int Game::get_nb_balls() const {
 
 
 void Game::step() {
+    if (status != ONGOING) return;
     size_t n = balls.size();
     for (size_t i = 0; i < n; ) {
         balls[i].move();
@@ -658,12 +659,12 @@ void Game::call_behavior(Brick& brick, const Ball& ball) {
 
 
 void Game::lost() {
-    status = LOST;
+    status = STOPPED;
     message::lost();
 }
 
 void Game::win() {
-    status = WON;
+    status = STOPPED;
     total_score += score_per_life * nb_lives;
     message::won();
 }
