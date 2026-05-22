@@ -10,6 +10,8 @@ void Paddle::set_theta(double new_theta) {
     theta = new_theta;
 }
 
+void Paddle::set_last_delta(Point d) { last_delta = d; }
+
 void Paddle::set_x(double x) {
     form.center.x = x;
 }
@@ -43,8 +45,7 @@ void Paddle::draw() const {
     form.draw(BLACK, false, -theta, M_PI + theta);
 }
 
-void Paddle::move() {    
-    // limiter la vitesse
+void Paddle::move() {
     double delta = target - form.center.x;
     if (abs(delta) > delta_norm_max) {
         delta = (delta > 0) ? delta_norm_max : -delta_norm_max;

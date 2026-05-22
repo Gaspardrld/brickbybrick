@@ -305,7 +305,6 @@ void My_window::on_draw(const Cairo::RefPtr<Cairo::Context> &cr, int width, int 
     cr->translate((width - side) / 2, (height + side) / 2);
     cr->scale(side / (arena_size), -side / (arena_size));
 
-    // TODO: draw the game
     if (state == NO_FILE || state == FILE_BAD) {
         return;
     }

@@ -38,7 +38,7 @@ public:
 
     void new_ball();
     void new_ball(double x, double y, double radius, double delta_x, double delta_y);
-    void consume_life() { if (nb_lives > 0) --nb_lives; }
+    void consume_life();
     void hit_colliding_brick(Ball& ball, Brick& brick);
     void hit_colliding_ball(Ball& ball, Ball& other_ball);
     void hit_colliding_paddle(Ball& ball);
@@ -48,6 +48,7 @@ public:
     void move_paddle();
     void set_target_paddle(double x);
     bool has_collision(const Ball& ball) const;
+    void resolve_collisions(Ball& ball);
     void update_entities();
     void update_status();
     void check_types_collisions(Ball& ball);
@@ -86,9 +87,8 @@ private:
     Paddle paddle;
     std::vector<Ball> balls;
     std::vector<Ball> pending_balls;
-    std::vector<std::unique_ptr<Brick>> bricks;
+    std::vector<std::unique_ptr<Brick>> bricks; // unique_ptr pour le polymorphisme
     Square arena = {{arena_size/2, arena_size/2}, arena_size};
-    // polymorphisme pour éviter les problèmes de slicing
 
     int nb_bricks_read;
     int nb_balls_read;

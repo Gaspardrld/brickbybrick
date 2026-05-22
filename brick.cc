@@ -120,23 +120,23 @@ Circle BallBrick::get_ball_in_brick() const {
 }
 
 
-//système de collision
+void Brick::draw(Color color) const { draw(); }
 
 
-//RainbowBrick
+// RainbowBrick
 void RainbowBrick::hit() {
     hit_points--;
     if (hit_points <= 0) living = false;
 }
 
 
-//BallBrick
+// BallBrick
 void BallBrick::hit() {
     living = false;
 }
 
 
-//SplitBrick
+// SplitBrick
 void SplitBrick::hit() {
     living = false;
 }

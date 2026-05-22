@@ -102,7 +102,6 @@ Game::ReadResult Game::read(const char* file_name) {
         istringstream iss(line);
         string first_word;
 
-        // ignorer les lignes vides et commentaires
         if (!(iss >> first_word) || first_word[0] == '#') {
             continue;
         }
@@ -112,7 +111,6 @@ Game::ReadResult Game::read(const char* file_name) {
         }
     }
     file.close();
-    // vérification que le fichier est complet
     if (current_state != FINISH) {
         reset();
         return INVALID_CONTENT;
@@ -172,6 +170,34 @@ int Game::get_nb_balls() const {
 
 
 
+void Game::consume_life() {
+    if (nb_lives > 0) --nb_lives;
+}
+
+void Game::resolve_collisions(Ball& ball) {
+    unsigned nb_rebonds = 0;
+    while (has_collision(ball) && nb_rebonds < nb_bounce_max) {
+        check_types_collisions(ball);
+        ball.undo_move();
+        ball.move();
+        nb_rebonds++;
+    }
+    for (const auto& brick : bricks) {
+        if (!brick->is_living()) continue;
+        if (!circle_square_intersect(ball.get_circle(), brick->get_form())) continue;
+        Point c  = ball.get_circle().center;
+        double r = ball.get_circle().radius;
+        double half = brick->get_form().side / 2.0;
+        double ox   = (half + r) - std::abs(c.x - brick->get_form().center.x);
+        double oy   = (half + r) - std::abs(c.y - brick->get_form().center.y);
+        double cx_ej = c.x + (c.x < brick->get_form().center.x ? -ox : ox);
+        double cy_ej = c.y + (c.y < brick->get_form().center.y ? -oy : oy);
+        if (ox < oy) ball.set_center({cx_ej, c.y});
+        else         ball.set_center({c.x, cy_ej});
+        break;
+    }
+}
+
 void Game::step() {
     if (status != ONGOING) return;
     size_t n = balls.size();
@@ -184,56 +210,13 @@ void Game::step() {
             if (i >= n) break;
             continue;
         }
-        unsigned int nb_rebonds = 0;
-        while (has_collision(balls[i])) {
-            if (nb_rebonds < nb_bounce_max) {
-                nb_rebonds++;
-                check_types_collisions(balls[i]);
-                balls[i].undo_move();
-                balls[i].move();
-            } else {
-                break;
-            }
-        }
-        for (const auto& brick : bricks) {
-            if (!brick->is_living() || !circle_square_intersect(balls[i].get_circle(), brick->get_form())) continue;
-            Point c = balls[i].get_circle().center;
-            double r = balls[i].get_circle().radius;
-            double half = brick->get_form().side / 2.0;
-            double ox = (half + r) - std::abs(c.x - brick->get_form().center.x);
-            double oy = (half + r) - std::abs(c.y - brick->get_form().center.y);
-            if (ox < oy) balls[i].set_center({c.x + (c.x < brick->get_form().center.x ? -ox : ox), c.y});
-            else         balls[i].set_center({c.x, c.y + (c.y < brick->get_form().center.y ? -oy : oy)});
-            break;
-        }
+        resolve_collisions(balls[i]);
         ++i;
     }
     move_paddle();
     n = balls.size();
-    for (size_t i = 0; i < n; ++i) {
-        unsigned int nb_rebonds = 0;
-        while (has_collision(balls[i])) {
-            if (nb_rebonds < nb_bounce_max) {
-                nb_rebonds++;
-                check_types_collisions(balls[i]);
-                balls[i].undo_move();
-                balls[i].move();
-            } else {
-                break;
-            }
-        }
-        for (const auto& brick : bricks) {
-            if (!brick->is_living() || !circle_square_intersect(balls[i].get_circle(), brick->get_form())) continue;
-            Point c = balls[i].get_circle().center;
-            double r = balls[i].get_circle().radius;
-            double half = brick->get_form().side / 2.0;
-            double ox = (half + r) - std::abs(c.x - brick->get_form().center.x);
-            double oy = (half + r) - std::abs(c.y - brick->get_form().center.y);
-            if (ox < oy) balls[i].set_center({c.x + (c.x < brick->get_form().center.x ? -ox : ox), c.y});
-            else         balls[i].set_center({c.x, c.y + (c.y < brick->get_form().center.y ? -oy : oy)});
-            break;
-        }
-    }
+    for (size_t i = 0; i < n; ++i)
+        resolve_collisions(balls[i]);
     for (auto& b : pending_balls) balls.push_back(std::move(b));
     pending_balls.clear();
     update_entities();
@@ -286,7 +269,6 @@ void Game::set_target_paddle(double x) {
 
 void Game::new_ball(){
     double pos_x = paddle.get_circle().center.x;
-    // positionné juste au dessus de la raquette
     double pos_y = paddle.get_circle().center.y
             + paddle.get_circle().radius
             + new_ball_radius + ball_spawn_gap + epsil_zero;
@@ -535,7 +517,6 @@ void Game::hit_colliding_ball(Ball& ball, Ball& other_ball) {
     double r2        = r_ball  * r_ball;
     double r_other2  = r_other * r_other;
 
-    // update ball (incident)
     double impulsion_a = (-v_n + v_other_n) * 2.0 * r_other2 / (r2 + r_other2);
     Point new_delta_a = {delta_ball.x + impulsion_a * n.x,
                          delta_ball.y + impulsion_a * n.y};
@@ -547,7 +528,7 @@ void Game::hit_colliding_ball(Ball& ball, Ball& other_ball) {
     }
     ball.set_delta(new_delta_a);
 
-    // symmetric update for other_ball (elastic collision conserves momentum)
+    // mise à jour symétrique de l'autre balle
     double impulsion_b = (v_n - v_other_n) * 2.0 * r2 / (r2 + r_other2);
     Point new_delta_b = {delta_other.x + impulsion_b * n.x,
                          delta_other.y + impulsion_b * n.y};
@@ -559,7 +540,7 @@ void Game::hit_colliding_ball(Ball& ball, Ball& other_ball) {
     }
     other_ball.set_delta(new_delta_b);
 
-    // Eject ball away from other_ball so the while(has_collision) loop exits cleanly
+    // éjection pour que la boucle de collision se termine proprement
     double sum_r = r_ball + r_other;
     if (n_norm < sum_r) {
         double depth = sum_r - n_norm + epsil_zero;
@@ -569,12 +550,13 @@ void Game::hit_colliding_ball(Ball& ball, Ball& other_ball) {
 }
 
 void Game::hit_collisions_wall(Ball& ball) {
-    bool vertical_check = ball.get_circle().center.y + ball.get_circle().radius > arena_size;
-    bool horizontal_check = ball.get_circle().center.x - ball.get_circle().radius < 0
-                or ball.get_circle().center.x + ball.get_circle().radius > arena_size;
+    Circle c = ball.get_circle();
+    bool vertical_check   = c.center.y + c.radius > arena_size;
+    bool horizontal_check = c.center.x - c.radius < 0
+                         or c.center.x + c.radius > arena_size;
     if (vertical_check and horizontal_check) {
-        double dx = std::abs(ball.get_circle().center.x - arena_size / 2.0);
-        double dy = std::abs(ball.get_circle().center.y - arena_size / 2.0);
+        double dx = std::abs(c.center.x - arena_size / 2.0);
+        double dy = std::abs(c.center.y - arena_size / 2.0);
         if (dx > dy)
             ball.set_delta({-ball.get_delta().x,  ball.get_delta().y});
         else
@@ -663,9 +645,9 @@ void Game::call_behavior(Brick& brick, const Ball& ball) {
     total_score += score_per_hit;
     brick.hit();
     if (brick.get_type() == BALL_BRICK) {
-        new_ball(brick.get_ball_in_brick().center.x,brick.get_ball_in_brick().center.y, 
-                brick.get_ball_in_brick().radius,
-                ball.get_delta().x, ball.get_delta().y);
+        Circle b = brick.get_ball_in_brick();
+        new_ball(b.center.x, b.center.y, b.radius,
+                 ball.get_delta().x, ball.get_delta().y);
     }
     else if (brick.get_type() == SPLIT_BRICK) {
         auto children = brick.get_children();
