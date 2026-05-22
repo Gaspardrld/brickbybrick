@@ -487,8 +487,13 @@ void Game::hit_colliding_brick(Ball& ball, Brick& brick) {
     double n2 = norm_squared(direction_vector);
     if (n2 >= epsil_zero * epsil_zero) {
         double k = 2.0 * dot_product(ball.get_delta(), direction_vector) / n2;
-        ball.set_delta({ball.get_delta().x - k * direction_vector.x,
-                        ball.get_delta().y - k * direction_vector.y});
+        // Garde : k > 0 signifie que la balle s'eloigne deja de la brique
+        // (composante du delta dans la direction sortante).  Reflechir
+        // dans ce cas renverrait la balle DANS la brique.
+        if (k < 0) {
+            ball.set_delta({ball.get_delta().x - k * direction_vector.x,
+                            ball.get_delta().y - k * direction_vector.y});
+        }
     } else {
         // Ball center on/inside brick: reverse the dominant velocity component
         // (= the axis along which ball entered the brick most directly)
