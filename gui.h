@@ -26,7 +26,7 @@ private:
     std::array<Gtk::Label, 4> info_text, info_value;
     Gtk::DrawingArea drawing;
     Game game;
-    enum GameState { NO_FILE, FILE_BAD, READY, RUNNING };
+    enum GameState { NO_FILE, FILE_BAD, READY, RUNNING, FINISH };
     GameState state = NO_FILE;
     std::string last_file;
 

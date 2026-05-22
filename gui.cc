@@ -64,8 +64,8 @@ void My_window::update_buttons()
 {
     bool exit_on    = (state != RUNNING);
     bool open_on    = (state != RUNNING);
-    bool save_on    = (state == READY);
-    bool restart_on = (state == FILE_BAD || state == READY);
+    bool save_on    = (state == READY || state == FINISH);
+    bool restart_on = (state == FILE_BAD || state == READY || state == FINISH);
     bool start_on   = (state == READY || state == RUNNING);
     bool step_on    = (state == READY);
 
@@ -252,6 +252,7 @@ void My_window::dialog_response(int response, Gtk::FileChooserDialog *dialog)
 }
 
 bool My_window::loop() {
+    state = READY;
     if (game.get_status() == Game::ONGOING) {
         game.step();
         update_infos();
@@ -259,8 +260,8 @@ bool My_window::loop() {
         state = RUNNING;
         return true;
     }
+    else if (game.get_status() == Game::STOPPED) state = FINISH;
     loop_activated = false;
-    state = READY;
     update_buttons();
     update_infos();
     drawing.queue_draw();
