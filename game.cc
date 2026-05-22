@@ -13,7 +13,7 @@ using namespace std;
 
 namespace {
     enum BrickType { RAINBOW = 0, BALL_BRICK = 1, SPLIT_BRICK = 2 };
-    constexpr double ball_spawn_gap = 1.0; // gap minimal entre raquette et balle spawned
+    constexpr double ball_spawn_gap = 1.0; //gap minimal entre raquette et balle spawn
 }
 
 Game::Game() : 
