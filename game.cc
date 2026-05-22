@@ -512,8 +512,23 @@ void Game::hit_colliding_brick(Ball& ball, Brick& brick) {
     double ox = (half + r) - std::abs(c.x - s.center.x);
     double oy = (half + r) - std::abs(c.y - s.center.y);
     if (ox <= 0.0 && oy <= 0.0) return;
-    if (ox < oy) ball.set_delta({-d.x,  d.y});
-    else         ball.set_delta({ d.x, -d.y});
+
+    // Garde de direction : ne reflechir qu'une composante si la balle
+    // se dirige effectivement DANS la brique sur cet axe.
+    // (c.X - s.X) * d.X < 0  <=>  delta pointe vers le centre brique
+    bool into_x = (c.x - s.center.x) * d.x < 0;
+    bool into_y = (c.y - s.center.y) * d.y < 0;
+
+    if (into_x && !into_y) {
+        ball.set_delta({-d.x,  d.y});
+    } else if (into_y && !into_x) {
+        ball.set_delta({ d.x, -d.y});
+    } else if (into_x && into_y) {
+        // Coin : on choisit l'axe de plus faible overlap (sortie la plus proche)
+        if (ox < oy) ball.set_delta({-d.x,  d.y});
+        else         ball.set_delta({ d.x, -d.y});
+    }
+    // sinon : la balle s'eloigne deja, ne rien faire
 }
 
 void Game::hit_colliding_ball(Ball& ball, Ball& other_ball) {
