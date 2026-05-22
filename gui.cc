@@ -119,6 +119,7 @@ void My_window::save_clicked()
 void My_window::restart_clicked()
 {
     if (state == NO_FILE) return;
+    if (loop_activated) return;
     if (game.restart()) state = READY;
     else                state = FILE_BAD;
     update_infos();
@@ -255,6 +256,7 @@ bool My_window::loop() {
         game.step();
         update_infos();
         drawing.queue_draw();
+        state = RUNNING;
         return true;
     }
     loop_activated = false;

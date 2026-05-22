@@ -191,7 +191,6 @@ void Game::step() {
                 balls[i].undo_move();
                 balls[i].move();
             } else {
-                balls[i].undo_move();
                 break;
             }
         }
@@ -208,7 +207,6 @@ void Game::step() {
                 balls[i].undo_move();
                 balls[i].move();
             } else {
-                balls[i].undo_move();
                 break;
             }
         }
@@ -468,7 +466,8 @@ void Game::check_types_collisions(Ball& ball) {
         }
     }
     for (auto& other : balls) {
-        if (&other != &ball && circles_intersect(ball.get_circle(), other.get_circle())) {
+        if (&other != &ball && 
+                    circles_intersect(ball.get_circle(), other.get_circle())) {
             hit_colliding_ball(ball, other);
             return;
         }
