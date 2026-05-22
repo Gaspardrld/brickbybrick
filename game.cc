@@ -195,6 +195,17 @@ void Game::step() {
                 break;
             }
         }
+        for (const auto& brick : bricks) {
+            if (!brick->is_living() || !circle_square_intersect(balls[i].get_circle(), brick->get_form())) continue;
+            Point c = balls[i].get_circle().center;
+            double r = balls[i].get_circle().radius;
+            double half = brick->get_form().side / 2.0;
+            double ox = (half + r) - std::abs(c.x - brick->get_form().center.x);
+            double oy = (half + r) - std::abs(c.y - brick->get_form().center.y);
+            if (ox < oy) balls[i].set_center({c.x + (c.x < brick->get_form().center.x ? -ox : ox), c.y});
+            else         balls[i].set_center({c.x, c.y + (c.y < brick->get_form().center.y ? -oy : oy)});
+            break;
+        }
         ++i;
     }
     move_paddle();
@@ -210,6 +221,17 @@ void Game::step() {
             } else {
                 break;
             }
+        }
+        for (const auto& brick : bricks) {
+            if (!brick->is_living() || !circle_square_intersect(balls[i].get_circle(), brick->get_form())) continue;
+            Point c = balls[i].get_circle().center;
+            double r = balls[i].get_circle().radius;
+            double half = brick->get_form().side / 2.0;
+            double ox = (half + r) - std::abs(c.x - brick->get_form().center.x);
+            double oy = (half + r) - std::abs(c.y - brick->get_form().center.y);
+            if (ox < oy) balls[i].set_center({c.x + (c.x < brick->get_form().center.x ? -ox : ox), c.y});
+            else         balls[i].set_center({c.x, c.y + (c.y < brick->get_form().center.y ? -oy : oy)});
+            break;
         }
     }
     for (auto& b : pending_balls) balls.push_back(std::move(b));
@@ -482,28 +504,16 @@ void Game::check_types_collisions(Ball& ball) {
 
 void Game::hit_colliding_brick(Ball& ball, Brick& brick) {
     call_behavior(brick, ball);
-    Point closest = closest_point_on_square(ball.get_circle().center, brick.get_form());
-    Point direction_vector = {ball.get_circle().center.x - closest.x,
-                              ball.get_circle().center.y - closest.y};
-    double n2 = norm_squared(direction_vector);
-    if (n2 >= epsil_zero * epsil_zero) {
-        double k = 2.0 * dot_product(ball.get_delta(), direction_vector) / n2;
-        // Garde : k > 0 signifie que la balle s'eloigne deja de la brique
-        // (composante du delta dans la direction sortante).  Reflechir
-        // dans ce cas renverrait la balle DANS la brique.
-        if (k < 0) {
-            ball.set_delta({ball.get_delta().x - k * direction_vector.x,
-                            ball.get_delta().y - k * direction_vector.y});
-        }
-    } else {
-        // Ball center on/inside brick: reverse the dominant velocity component
-        // (= the axis along which ball entered the brick most directly)
-        Point d = ball.get_delta();
-        if (std::abs(d.x) > std::abs(d.y))
-            ball.set_delta({-d.x, d.y});
-        else
-            ball.set_delta({d.x, -d.y});
-    }
+    Point c = ball.get_circle().center;
+    double r = ball.get_circle().radius;
+    const Square& s = brick.get_form();
+    double half = s.side / 2.0;
+    Point d = ball.get_delta();
+    double ox = (half + r) - std::abs(c.x - s.center.x);
+    double oy = (half + r) - std::abs(c.y - s.center.y);
+    if (ox <= 0.0 || oy <= 0.0) return;
+    if (ox < oy) ball.set_delta({-d.x,  d.y});
+    else         ball.set_delta({ d.x, -d.y});
 }
 
 void Game::hit_colliding_ball(Ball& ball, Ball& other_ball) {
