@@ -22,7 +22,7 @@ public :
     const Square& get_form() const;
     virtual void draw() const = 0;
     virtual int get_type() const = 0;
-    virtual void draw(Color color) const { draw(); }
+    virtual void draw(Color color) const;
     virtual Circle get_ball_in_brick() const {return {{0,0}, 0};}
     virtual void hit() = 0;
     virtual std::vector<std::unique_ptr<Brick>> get_children() { return {}; }

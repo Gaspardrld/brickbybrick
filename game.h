@@ -37,24 +37,24 @@ public:
     const std::vector<Ball>& get_balls() const;
 
     void new_ball();
+    void consume_life();
+    void set_target_paddle(double x);
+
+private:
     void new_ball(double x, double y, double radius, double delta_x, double delta_y);
-    void consume_life() { if (nb_lives > 0) --nb_lives; }
     void hit_colliding_brick(Ball& ball, Brick& brick);
     void hit_colliding_ball(Ball& ball, Ball& other_ball);
     void hit_colliding_paddle(Ball& ball);
     void hit_collisions_wall(Ball& ball);
-
     void call_behavior(Brick& brick, const Ball& ball);
     void move_paddle();
-    void set_target_paddle(double x);
     bool has_collision(const Ball& ball) const;
     void update_entities();
     void update_status();
     void check_types_collisions(Ball& ball);
+    void resolve_collisions(Ball& ball);
     void lost();
     void win();
-
-private:
     enum State {
         EXPECT_SCORE,
         EXPECT_LIVES,

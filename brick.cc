@@ -23,6 +23,10 @@ const Square& Brick::get_form() const {
     return form;
 }
 
+void Brick::draw(Color color) const {
+    draw();
+}
+
 int RainbowBrick::get_hit_points() const {
     return hit_points;
 }
@@ -120,23 +124,15 @@ Circle BallBrick::get_ball_in_brick() const {
 }
 
 
-//système de collision
-
-
-//RainbowBrick
 void RainbowBrick::hit() {
     hit_points--;
     if (hit_points <= 0) living = false;
 }
 
-
-//BallBrick
 void BallBrick::hit() {
     living = false;
 }
 
-
-//SplitBrick
 void SplitBrick::hit() {
     living = false;
 }

@@ -29,8 +29,8 @@ public :
     void move();
     void set_target(double x);
     Point get_last_delta() const { return last_delta; }
-    void  set_last_delta(Point d) { last_delta = d; }
-    void set_x  (double x);
+    void set_last_delta(Point d);
+    void set_x(double x);
     void clamp_to_arena();
 };
 
