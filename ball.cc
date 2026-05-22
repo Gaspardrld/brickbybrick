@@ -53,5 +53,3 @@ void Ball::undo_move() {
     form.center = pre_move_center;
 }
 void Ball::set_delta(Point d) { delta = d; }
-
-void Ball::set_center(Point c) { form.center = c; pre_move_center = c; }
