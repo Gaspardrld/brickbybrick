@@ -511,7 +511,7 @@ void Game::hit_colliding_brick(Ball& ball, Brick& brick) {
     Point d = ball.get_delta();
     double ox = (half + r) - std::abs(c.x - s.center.x);
     double oy = (half + r) - std::abs(c.y - s.center.y);
-    if (ox <= 0.0 || oy <= 0.0) return;
+    if (ox <= 0.0 && oy <= 0.0) return;
     if (ox < oy) ball.set_delta({-d.x,  d.y});
     else         ball.set_delta({ d.x, -d.y});
 }
@@ -558,6 +558,14 @@ void Game::hit_colliding_ball(Ball& ball, Ball& other_ball) {
         new_delta_b.y *= f;
     }
     other_ball.set_delta(new_delta_b);
+
+    // Eject ball away from other_ball so the while(has_collision) loop exits cleanly
+    double sum_r = r_ball + r_other;
+    if (n_norm < sum_r) {
+        double depth = sum_r - n_norm + epsil_zero;
+        ball.set_center({centre_ball.x - depth * n.x,
+                         centre_ball.y - depth * n.y});
+    }
 }
 
 void Game::hit_collisions_wall(Ball& ball) {
