@@ -678,11 +678,11 @@ void Game::consume_life() {
 
 void Game::lost() {
     status = STOPPED;
-    message::lost();
+    cout << message::lost();
 }
 
 void Game::win() {
     status = STOPPED;
     total_score += score_per_life * nb_lives;
-    message::won();
+    cout << message::won();
 }
