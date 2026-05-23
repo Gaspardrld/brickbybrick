@@ -535,7 +535,7 @@ void Game::hit_colliding_ball(Ball& ball, Ball& other_ball) {
 
     double v_n       = dot_product(delta_ball,  n);
     double v_other_n = dot_product(delta_other, n);
-    if (v_n - v_other_n <= 0) return; // balles en séparation, pas d'impact réel
+    if (v_n - v_other_n <= 0) return; // balles en séparation - pas d'impact réel
     double r2        = r_ball  * r_ball;
     double r_other2  = r_other * r_other;
 
@@ -551,7 +551,7 @@ void Game::hit_colliding_ball(Ball& ball, Ball& other_ball) {
     }
     ball.set_delta(new_delta_a);
 
-    // symmetric update for other_ball (elastic collision conserves momentum)
+    // collision élastique
     double impulsion_b = (v_n - v_other_n) * 2.0 * r2 / (r2 + r_other2);
     Point new_delta_b = {delta_other.x + impulsion_b * n.x,
                          delta_other.y + impulsion_b * n.y};
@@ -611,7 +611,7 @@ void Game::hit_colliding_paddle(Ball& ball) {
     ball.set_delta(new_delta);
 
     // Ejection : pousser la balle au-delà du cercle paddle + epsil_zero
-    // (sinon circles_intersect re-détecte une collision via sa tolérance)
+    // (sinon circles_intersect redétecte une collision via sa tolérance)
     double sum_r = paddle.get_circle().radius + ball.get_circle().radius;
     if (n_norm < sum_r) {
         double depth = sum_r - n_norm + epsil_zero;
