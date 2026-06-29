@@ -223,14 +223,18 @@ void Game::step() {
 void Game::move_paddle() {
     double x_previous = paddle.get_circle().center.x;
     paddle.move();
-    
+
     for (auto& brick : bricks) {
         if (circle_square_intersect(paddle.get_circle(), brick->get_form())) {
             paddle.set_x(x_previous);
+            paddle.set_last_delta({0.0, 0.0});
             return;
         }
     }
     paddle.clamp_to_arena();
+    // last_delta = déplacement RÉEL après clamp (sinon les balles voient une
+    // vitesse paddle inexistante et le rebond va dans le mauvais sens)
+    paddle.set_last_delta({paddle.get_circle().center.x - x_previous, 0.0});
 }
 
 
@@ -477,6 +481,7 @@ void Game::check_types_collisions(Ball& ball) {
 }
 
 void Game::hit_colliding_brick(Ball& ball, Brick& brick) {
+    call_behavior(brick, ball);
     Point closest = closest_point_on_square(ball.get_circle().center, brick.get_form());
     Point direction_vector = {ball.get_circle().center.x - closest.x,
                               ball.get_circle().center.y - closest.y};
@@ -486,16 +491,14 @@ void Game::hit_colliding_brick(Ball& ball, Brick& brick) {
         ball.set_delta({ball.get_delta().x - k * direction_vector.x,
                         ball.get_delta().y - k * direction_vector.y});
     } else {
-        // ball center is inside brick (tunnel effect): reflect off closest face
-        Point diff = {ball.get_circle().center.x - brick.get_form().center.x,
-                      ball.get_circle().center.y - brick.get_form().center.y};
-        double half = brick.get_form().side / 2.0;
-        if (std::abs(diff.x / half) > std::abs(diff.y / half))
-            ball.set_delta({-ball.get_delta().x, ball.get_delta().y});
+        // Ball center on/inside brick: reverse the dominant velocity component
+        // (= the axis along which ball entered the brick most directly)
+        Point d = ball.get_delta();
+        if (std::abs(d.x) > std::abs(d.y))
+            ball.set_delta({-d.x, d.y});
         else
-            ball.set_delta({ball.get_delta().x, -ball.get_delta().y});
+            ball.set_delta({d.x, -d.y});
     }
-    call_behavior(brick, ball);
 }
 
 void Game::hit_colliding_ball(Ball& ball, Ball& other_ball) {
@@ -566,28 +569,36 @@ void Game::hit_colliding_paddle(Ball& ball) {
     Point delta_ball = ball.get_delta();
     Point delta_paddle = paddle.get_last_delta();
 
-    Point n = { centre_paddle.x - centre_ball.x, centre_paddle.y - centre_ball.y };
+    Point n = { centre_paddle.x - centre_ball.x,
+                centre_paddle.y - centre_ball.y };
     double n_norm = norm(n);
-
     if (n_norm < epsil_zero) return;
-    n.x = n.x / n_norm;
-    n.y = n.y / n_norm;
+    n.x /= n_norm;
+    n.y /= n_norm;
+
     double v_n        = dot_product(delta_ball,   n);
     double v_paddle_n = dot_product(delta_paddle, n);
     double impulsion  = 2 * (-v_n + v_paddle_n);
 
-    Point new_delta;
-    new_delta.x = delta_ball.x + impulsion * n.x;
-    new_delta.y = delta_ball.y + impulsion * n.y;
+    Point new_delta = { delta_ball.x + impulsion * n.x,
+                        delta_ball.y + impulsion * n.y };
 
     double new_norm = norm(new_delta);
-    if (new_norm > delta_norm_max){
+    if (new_norm > delta_norm_max) {
         double factor = delta_norm_max / new_norm;
-        new_delta.x = new_delta.x * factor;
-        new_delta.y = new_delta.y * factor;
+        new_delta.x *= factor;
+        new_delta.y *= factor;
     }
-
     ball.set_delta(new_delta);
+
+    // Ejection : pousser la balle au-delà du cercle paddle + epsil_zero
+    // (sinon circles_intersect re-détecte une collision via sa tolérance)
+    double sum_r = paddle.get_circle().radius + ball.get_circle().radius;
+    if (n_norm < sum_r) {
+        double depth = sum_r - n_norm + epsil_zero;
+        ball.set_center({ centre_ball.x - depth * n.x,
+                          centre_ball.y - depth * n.y });
+    }
 }
 
 
