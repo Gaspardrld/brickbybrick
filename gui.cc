@@ -64,8 +64,8 @@ void My_window::update_buttons()
 {
     bool exit_on    = (state != RUNNING);
     bool open_on    = (state != RUNNING);
-    bool save_on    = (state == READY);
-    bool restart_on = (state == FILE_BAD || state == READY);
+    bool save_on    = (state == READY || state == FINISH);
+    bool restart_on = (state == FILE_BAD || state == READY || state == FINISH);
     bool start_on   = (state == READY || state == RUNNING);
     bool step_on    = (state == READY);
 
@@ -119,6 +119,7 @@ void My_window::save_clicked()
 void My_window::restart_clicked()
 {
     if (state == NO_FILE) return;
+    if (loop_activated) return;
     if (game.restart()) state = READY;
     else                state = FILE_BAD;
     update_infos();
@@ -251,14 +252,16 @@ void My_window::dialog_response(int response, Gtk::FileChooserDialog *dialog)
 }
 
 bool My_window::loop() {
+    state = READY;
     if (game.get_status() == Game::ONGOING) {
         game.step();
         update_infos();
         drawing.queue_draw();
+        state = RUNNING;
         return true;
     }
+    else if (game.get_status() == Game::STOPPED) state = FINISH;
     loop_activated = false;
-    state = READY;
     update_buttons();
     update_infos();
     drawing.queue_draw();
@@ -302,7 +305,6 @@ void My_window::on_draw(const Cairo::RefPtr<Cairo::Context> &cr, int width, int 
     cr->translate((width - side) / 2, (height + side) / 2);
     cr->scale(side / (arena_size), -side / (arena_size));
 
-    // TODO: draw the game
     if (state == NO_FILE || state == FILE_BAD) {
         return;
     }
@@ -342,7 +344,7 @@ void My_window::on_drawing_left_click(int n_press, double x, double y)
         game.consume_life();
         update_infos();
     }
-    drawing.queue_draw(); // TODO
+    drawing.queue_draw();
 }
 
 

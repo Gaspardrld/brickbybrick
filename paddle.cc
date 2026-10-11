@@ -55,6 +55,10 @@ void Paddle::move() {
     last_delta.x = delta;  
 }
 
+void Paddle::set_last_delta(Point d) {
+    last_delta = d;
+}
+
 void Paddle::set_target(double x) {
     target = x;
 }

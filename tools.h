@@ -45,6 +45,9 @@ bool is_circle_arc_in_bounds(double x_center, double y_center,
 bool circles_intersect(const Circle& c1, const Circle& c2, 
                     bool use_tolerance = true);
 
+bool is_circle_in_circle(const Circle& c1, const Circle& c2, 
+                                            bool use_tolerance = true);
+
 bool circle_square_intersect(const Circle& c, const Square& s,
                     bool use_tolerance = true);
 

@@ -27,9 +27,6 @@ double Ball::norm_delta() const {
     return norm(delta);
 }
 
-double Ball::norm_delta_squared() const {
-    return norm_squared(delta);
-}
 
 const Circle Ball::get_circle() const {
     return form;
@@ -53,3 +50,8 @@ void Ball::undo_move() {
     form.center = pre_move_center;
 }
 void Ball::set_delta(Point d) { delta = d; }
+
+void Ball::set_center(Point c) {
+    form.center = c;
+    pre_move_center = c;
+}

@@ -13,7 +13,7 @@
 class Paddle {
 private :
     Circle form;
-    double target;
+    double target = arena_size/2.0;
     double theta;
     Point last_delta = {0.0, 0.0};
 public :
@@ -29,7 +29,8 @@ public :
     void move();
     void set_target(double x);
     Point get_last_delta() const { return last_delta; }
-    void set_x  (double x);
+    void set_last_delta(Point d);
+    void set_x(double x);
     void clamp_to_arena();
 };
 
