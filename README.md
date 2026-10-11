@@ -2,7 +2,7 @@
 
 A Breakout-style game written in C++17 with a gtkmm 4 graphical interface, built as the semester project of the EPFL programming course (2026).
 
-![Gameplay](screenshot.png)
+<img width="307" height="266" alt="image" src="https://github.com/user-attachments/assets/9f719842-ac5a-4010-9165-e35ec96a2575" />
 
 ## Features
 
